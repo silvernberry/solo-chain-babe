@@ -1,10 +1,11 @@
 [workspace.package]
+version = "0.1.0"
+edition = "2021"
 license = "MIT-0"
 authors = ["Parity Technologies <admin@parity.io>"]
 homepage = "https://paritytech.github.io/polkadot-sdk/"
 repository = "https://github.com/paritytech/polkadot-sdk-solochain-template.git"
-edition = "2021"
-tag = "Polkadot stable2503"
+
 
 [workspace]
 members = [
@@ -123,6 +124,11 @@ sp-transaction-pool = { version = "36.0.0", default-features = false }
 sp-version = { version = "39.0.0", default-features = false }
 substrate-wasm-builder = { version = "26.0.0", default-features = false }
 secp256k1 = {version = "0.27", default-features = false, features = ["rust"] }
+polkavm-derive = "0.18.0"
+docify = { version = "0.2.9" }
+pallet-examples = { version = "7.0.0", default-features = false }
+
+
 # local pallets
 
 pallet-babe = { path = "substrate/frame/babe", default-features = false  }
@@ -130,7 +136,7 @@ pallet-staking = { path = "substrate/frame/staking", default-features = false }
 pallet-democracy = { path = "substrate/frame/democracy", default-features = false }
 pallet-grandpa = { path = "substrate/frame/grandpa", default-features = false }
 pallet-contracts = { path = "substrate/frame/contracts", default-features = false }
-pallet-contracts-fixtures = { version = "1.0.0", default-features = false }
+pallet-contracts-fixtures = { path = "substrate/frame/contracts/fixtures", default-features = false }
 pallet-staking-reward-curve = { path = "substrate/frame/staking/reward-curve", default-features = false }
 
 # frame/babe
