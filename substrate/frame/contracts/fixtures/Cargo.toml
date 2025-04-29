@@ -10,6 +10,8 @@ description = "Fixtures for testing contracts pallet."
 [lints]
 workspace = true
 
+[package.metadata.contracts]
+
 [dependencies]
 anyhow = { workspace = true, default-features = true }
 frame-system.default-features = true

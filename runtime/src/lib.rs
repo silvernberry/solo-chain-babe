@@ -7,7 +7,7 @@ pub mod apis;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarks;
 pub mod configs;
-
+pub mod constants;
 extern crate alloc;
 use alloc::vec::Vec;
 use sp_runtime::{
@@ -22,10 +22,28 @@ use sp_version::RuntimeVersion;
 pub use frame_system::Call as SystemCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use pallet_timestamp::Call as TimestampCall;
+pub use pallet_staking::Call as StakingCall;
+
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 
 pub mod genesis_config_presets;
+pub use frame_system;
+pub use pallet_aura;
+pub use pallet_grandpa;
+pub use pallet_balances;
+pub use pallet_timestamp;
+pub use pallet_democracy;
+pub use pallet_preimage;
+pub use pallet_scheduler;
+pub use pallet_transaction_payment;
+pub use pallet_sudo;
+pub use pallet_staking;
+pub use pallet_template;
+pub use pallet_session;
+pub use pallet_nomination_pools;
+pub use pallet_election_provider_multi_phase;
+
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
@@ -146,6 +164,10 @@ pub type SignedBlock = generic::SignedBlock<Block>;
 /// BlockId type as expected by this runtime.
 pub type BlockId = generic::BlockId<Block>;
 
+/// A timestamp type (milliseconds since epoch).
+pub type Moment = u64;
+
+
 /// The `TransactionExtension` to the basic transaction logic.
 pub type TxExtension = (
 	frame_system::CheckNonZeroSender<Runtime>,
@@ -225,4 +247,31 @@ mod runtime {
 	// Include the custom logic from the pallet-template in the runtime.
 	#[runtime::pallet_index(7)]
 	pub type Template = pallet_template;
+
+	#[runtime::pallet_index(8)]
+	pub type Democracy = pallet_democracy;
+
+	#[runtime::pallet_index(9)]
+	pub type Preimage = pallet_preimage;
+
+	#[runtime::pallet_index(10)]
+	pub type Scheduler = pallet_scheduler;
+
+	#[runtime::pallet_index(11)]
+	pub type Staking = pallet_staking;
+
+	#[runtime::pallet_index(12)]
+	pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase;
+
+	#[runtime::pallet_index(13)]
+	pub type Session = pallet_session;
+
+	#[runtime::pallet_index(14)]
+	pub type NominationPools = pallet_nomination_pools;
+
+	#[runtime::pallet_index(15)]
+	pub type Historical = pallet_session::historical;
+
+
 }
+

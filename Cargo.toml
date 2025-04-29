@@ -58,6 +58,9 @@ useless_conversion = { level = "allow", priority = 2 }               # Types may
 while_immutable_condition = { level = "allow", priority = 2 }        # false positives
 zero-prefixed-literal = { level = "allow", priority = 2 }            # 00_1000_000
 
+[patch.crates-io]
+pallet-contracts-fixtures = { path = "substrate/frame/contracts/fixtures"}
+
 
 [workspace.dependencies]
 
@@ -97,7 +100,7 @@ sp-runtime = { version = "41.1.0", default-features = false }
 sp-timestamp = { version = "36.0.0", default-features = false }
 substrate-frame-rpc-system = { version = "43.0.0", default-features = false }
 substrate-build-script-utils = { version = "11.0.0", default-features = false }
-parity-scale-codec = { version = "3.7.0", features = ["derive"], default-features = false }
+parity-scale-codec = { version = "3.7.4", features = ["derive"], default-features = false }
 scale-info = { version = "2.11.6", features = ["derive"], default-features = false }
 frame-benchmarking = { version = "40.0.0", default-features = false }
 frame-executive = { version = "40.0.0", default-features = false }
@@ -119,7 +122,7 @@ sp-storage = { version = "22.0.0", default-features = false }
 sp-transaction-pool = { version = "36.0.0", default-features = false }
 sp-version = { version = "39.0.0", default-features = false }
 substrate-wasm-builder = { version = "26.0.0", default-features = false }
-
+secp256k1 = {version = "0.27", default-features = false, features = ["rust"] }
 # local pallets
 
 pallet-babe = { path = "substrate/frame/babe", default-features = false  }
@@ -127,7 +130,8 @@ pallet-staking = { path = "substrate/frame/staking", default-features = false }
 pallet-democracy = { path = "substrate/frame/democracy", default-features = false }
 pallet-grandpa = { path = "substrate/frame/grandpa", default-features = false }
 pallet-contracts = { path = "substrate/frame/contracts", default-features = false }
-pallet-contracts-fixtures = { path = "substrate/frame/contracts/fixtures", default-features = false }
+pallet-contracts-fixtures = { version = "1.0.0", default-features = false }
+pallet-staking-reward-curve = { path = "substrate/frame/staking/reward-curve", default-features = false }
 
 # frame/babe
 
@@ -138,7 +142,6 @@ sp-staking = { version = "38.0.0", default-features = false }
 frame-election-provider-support = { version = "40.1.0", default-features = false }
 pallet-authorship = { version = "40.0.0", default-features = false }
 pallet-offences = { version = "39.0.0", default-features = false }
-pallet-staking-reward-curve = { version = "12.0.0", default-features = false }
 
 
 # frame/contracts/fixtures
@@ -208,7 +211,10 @@ rand_chacha = { version = "0.3.1", default-features = false }
 sp-npos-elections  = { version = "36.1.0", default-features = false }
 pallet-bags-list  = { version = "39.1.0", default-features = false }
 substrate-test-utils  = { version = "3.0.0", default-features = false }
-
+pallet-election-provider-multi-phase = { version = "39.1.0", default-features = false}
+pallet-bag-list = { version = "39.1.0", default-features = false}
+pallet-nomination-pools =  { version = "38.1.0", default-features = false}
+pallet-delegated-staking = { version = "7.0.0", default-features = false }
 # frame/staking/reward-curve
 
 proc-macro-crate = { version = "3.0.0" }

@@ -1,6 +1,0 @@
-warning: /Users/workspace/Desktop/solo-sub-chainv5/Cargo.toml: unused manifest key: workspace.package.tag
-warning: patch for `pallet-babe` uses the features mechanism. default-features and features will not take effect because the patch dependency does not support this mechanism
-error: failed to resolve patches for `https://github.com/rust-lang/crates.io-index`
-
-Caused by:
-  patch for `pallet-babe` in `https://github.com/rust-lang/crates.io-index` points to the same source, but patches must point to different sources
