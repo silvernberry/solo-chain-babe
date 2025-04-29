@@ -14,379 +14,75 @@ warning: unused import: `self as codec`
    = note: `#[warn(unused_imports)]` on by default
 
 warning: `pallet-grandpa` (lib) generated 1 warning (run `cargo fix --lib -p pallet-grandpa` to apply 1 suggestion)
-error: failed to run custom build command for `solochain-template-runtime v0.1.0 (/Users/workspace/Desktop/solo-sub-chainv5/runtime)`
+warning: solochain-template-runtime@0.1.0: You are building WASM runtime using `wasm32-unknown-unknown` target, although Rust >= 1.84 supports `wasm32v1-none` target!
+warning: solochain-template-runtime@0.1.0: You can install it with `rustup target add wasm32v1-none --toolchain stable-aarch64-apple-darwin` if you're using `rustup`.
+warning: solochain-template-runtime@0.1.0: After installing `wasm32v1-none` target, you must rebuild WASM runtime from scratch, use `cargo clean` before building.
+warning: unused imports: `EqualPrivilegeOnly` and `WithdrawReasons`
+  --> runtime/src/configs/mod.rs:38:3
+   |
+38 |         EqualPrivilegeOnly, Currency, LockableCurrency, 
+   |         ^^^^^^^^^^^^^^^^^^
+39 |         QueryPreimage, StorePreimage, Nothing, EnsureOrigin, WithdrawReasons
+   |                                                              ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
 
-Caused by:
-  process didn't exit successfully: `/Users/workspace/Desktop/solo-sub-chainv5/target/debug/build/solochain-template-runtime-f9655e1cfcc94758/build-script-build` (exit status: 1)
-  --- stdout
-  Information that should be included in a bug report.
-  Executing build command: env -u CARGO_ENCODED_RUSTFLAGS -u RUSTC CARGO_MAKEFLAGS="-j --jobserver-fds=9,10 --jobserver-auth=9,10" CARGO_TARGET_DIR="/Users/workspace/Desktop/solo-sub-chainv5/target/debug/wbuild/solochain-template-runtime/target" RUSTFLAGS="-C link-arg=--export-table -C link-arg=--export=__heap_base -C link-arg=--import-memory --cfg substrate_runtime " SKIP_WASM_BUILD="" "/Users/workspace/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo" "rustc" "--target=wasm32v1-none" "--manifest-path=/Users/workspace/Desktop/solo-sub-chainv5/target/debug/wbuild/solochain-template-runtime/Cargo.toml" "--color=always" "--profile" "release"
-  Using rustc version: rustc 1.86.0 (05f9846f8 2025-03-31)
+warning: unused import: `self`
+  --> runtime/src/configs/mod.rs:52:26
+   |
+52 | use sp_runtime::traits::{self, Convert, OpaqueKeys};
+   |                          ^^^^
 
+warning: unused import: `Democracy`
+  --> runtime/src/configs/mod.rs:73:45
+   |
+73 |     AccountId, Aura, Balance, NominationPools, Democracy, Timestamp, Session, Balances, Staking, TransactionPayment, ElectionProviderMult...
+   |                                                ^^^^^^^^^
 
-  --- stderr
-  warning: Patch `pallet-contracts-fixtures v1.0.0 (/Users/workspace/Desktop/solo-sub-chainv5/substrate/frame/contracts/fixtures)` was not used in the crate graph.
-  Check that the patched package version and available features are compatible
-  with the dependency requirements. If the patch has a different version from
-  what is locked in the Cargo.lock file, run `cargo update` to use the new
-  version. This may also occur with an optional dependency that is not enabled.
-  warning: unused import: `self as codec`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/substrate/frame/grandpa/src/equivocation.rs:39:26
-     |
-  39 | use parity_scale_codec::{self as codec, Decode, Encode};
-     |                          ^^^^^^^^^^^^^
-     |
-     = note: `#[warn(unused_imports)]` on by default
+warning: use of deprecated struct `pallet_nomination_pools::adapter::TransferStake`: consider migrating to DelegateStake
+  --> runtime/src/configs/mod.rs:58:39
+   |
+58 | use pallet_nomination_pools::adapter::TransferStake;
+   |                                       ^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
 
-  warning: `pallet-grandpa` (lib) generated 1 warning (run `cargo fix --lib -p pallet-grandpa` to apply 1 suggestion)
-     Compiling solochain-template-runtime v0.1.0 (/Users/workspace/Desktop/solo-sub-chainv5/runtime)
-  error[E0432]: unresolved imports `super::Aura`, `super::Grandpa`, `super::InherentDataExt`, `super::Runtime`, `super::RuntimeCall`, `super::RuntimeGenesisConfig`, `super::System`, `super::TransactionPayment`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/apis.rs:45:13
-     |
-  45 |     AccountId, Aura, Balance, Block, Executive, Grandpa, InherentDataExt, Nonce, Runtime,
-     |                ^^^^                             ^^^^^^^  ^^^^^^^^^^^^^^^         ^^^^^^^ no `Runtime` in the root
-     |                |                                |        |
-     |                |                                |        no `InherentDataExt` in the root
-     |                no `Aura` in the root            no `Grandpa` in the root
-  46 |     RuntimeCall, RuntimeGenesisConfig, SessionKeys, System, TransactionPayment, VERSION,
-     |     ^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^               ^^^^^^  ^^^^^^^^^^^^^^^^^^ no `TransactionPayment` in the root
-     |     |            |                                  |
-     |     |            |                                  no `System` in the root
-     |     |            no `RuntimeGenesisConfig` in the root
-     |     no `RuntimeCall` in the root
+warning: use of deprecated struct `pallet_nomination_pools::adapter::TransferStake`: consider migrating to DelegateStake
+   --> runtime/src/configs/mod.rs:284:23
+    |
+284 |     type StakeAdapter =  TransferStake<Runtime, pallet_staking::Pallet<Runtime>>;
+    |                          ^^^^^^^^^^^^^
 
-  error[E0432]: unresolved imports `super::Aura`, `super::NominationPools`, `super::Democracy`, `super::Session`, `super::Balances`, `super::Staking`, `super::TransactionPayment`, `super::ElectionProviderMultiPhase`, `super::PalletInfo`, `super::Runtime`, `super::RuntimeCall`, `super::RuntimeEvent`, `super::RuntimeFreezeReason`, `super::RuntimeHoldReason`, `super::RuntimeOrigin`, `super::OriginCaller`, `super::RuntimeTask`, `super::System`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:70:13
-     |
-  70 |     AccountId, Aura, Balance, NominationPools, Democracy, Session, Balances, Staking, TransactionPayment, ElectionProviderMultiPhase, Block, BlockNumber, Hash, Nonce, PalletInfo, Runti...
-     |                ^^^^           ^^^^^^^^^^^^^^^  ^^^^^^^^^  ^^^^^^^  ^^^^^^^^  ^^^^^^^  ^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^                                   ^^^^^^^^^^  ^^^^^^^ no `Runtime` in the root
-     |                |              |                |          |        |         |        |                   |                                                            |
-     |                |              |                |          |        |         |        |                   |                                                            no `PalletInfo` in the root
-     |                |              |                |          |        |         |        |                   no `ElectionProviderMultiPhase` in the root
-     |                |              |                |          |        |         |        no `TransactionPayment` in the root
-     |                |              |                |          |        |         no `Staking` in the root
-     |                |              |                |          |        no `Balances` in the root
-     |                |              |                |          |        help: a similar name exists in the module: `Balance`
-     |                |              |                |          no `Session` in the root
-     |                |              |                no `Democracy` in the root
-     |                |              no `NominationPools` in the root
-     |                no `Aura` in the root
-  71 |     RuntimeCall, RuntimeEvent, RuntimeFreezeReason, RuntimeHoldReason, RuntimeOrigin, OriginCaller, RuntimeTask,
-     |     ^^^^^^^^^^^  ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^  ^^^^^^^^^^^^  ^^^^^^^^^^^
-  72 |     System, EXISTENTIAL_DEPOSIT, SLOT_DURATION, VERSION,
-     |     ^^^^^^
-     |
-     = note: unresolved item `crate::apis::api::Aura` exists but is inaccessible
-     = help: consider importing one of these variants instead:
-             crate::pallet_staking::HoldReason::Staking
-             pallet_staking::HoldReason::Staking
-     = note: unresolved item `crate::apis::api::TransactionPayment` exists but is inaccessible
-     = help: consider importing this trait instead:
-             frame_support::traits::PalletInfo
-     = note: unresolved item `crate::apis::api::Runtime` exists but is inaccessible
+warning: unused import: `Currency`
+  --> runtime/src/configs/mod.rs:38:23
+   |
+38 |         EqualPrivilegeOnly, Currency, LockableCurrency, 
+   |                             ^^^^^^^^
 
-  error[E0432]: unresolved imports `crate::BalancesConfig`, `crate::RuntimeGenesisConfig`, `crate::SudoConfig`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/genesis_config_presets.rs:18:24
-     |
-  18 | use crate::{AccountId, BalancesConfig, RuntimeGenesisConfig, SudoConfig};
-     |                        ^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^ no `SudoConfig` in the root
-     |                        |               |
-     |                        |               no `RuntimeGenesisConfig` in the root
-     |                        no `BalancesConfig` in the root
-     |
-     = note: unresolved item `crate::apis::api::RuntimeGenesisConfig` exists but is inaccessible
+warning: unused import: `LockableCurrency`
+  --> runtime/src/configs/mod.rs:38:33
+   |
+38 |         EqualPrivilegeOnly, Currency, LockableCurrency, 
+   |                                       ^^^^^^^^^^^^^^^^
 
-  error[E0433]: failed to resolve: `Pallet` is a struct, not a module
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:273:52
-      |
-  273 |     pub type Historical = pallet_session::historical::Pallet;
-      |                                                       ^^^^^^ `Pallet` is a struct, not a module
+warning: unused import: `QueryPreimage`
+  --> runtime/src/configs/mod.rs:39:3
+   |
+39 |         QueryPreimage, StorePreimage, Nothing, EnsureOrigin, WithdrawReasons
+   |         ^^^^^^^^^^^^^
 
-  error[E0412]: cannot find type `Aura` in this scope
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:73:13
-     |
-  73 |         pub aura: Aura,
-     |                   ^^^^ not found in this scope
+warning: unused import: `StorePreimage`
+  --> runtime/src/configs/mod.rs:39:18
+   |
+39 |         QueryPreimage, StorePreimage, Nothing, EnsureOrigin, WithdrawReasons
+   |                        ^^^^^^^^^^^^^
 
-  error[E0412]: cannot find type `Grandpa` in this scope
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:74:16
-     |
-  74 |         pub grandpa: Grandpa,
-     |                      ^^^^^^^ not found in this scope
+warning: unused import: `EnsureOrigin`
+  --> runtime/src/configs/mod.rs:39:42
+   |
+39 |         QueryPreimage, StorePreimage, Nothing, EnsureOrigin, WithdrawReasons
+   |                                                ^^^^^^^^^^^^
 
-  error[E0412]: cannot find type `Aura` in this scope
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:73:13
-     |
-  73 |         pub aura: Aura,
-     |                   ^^^^ not found in this scope
-     |
-  help: you might be missing a type parameter
-    --> /Users/workspace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sp-runtime-41.1.0/src/traits/mod.rs:2091:19
-     |
-  209|         pub struct $name<Aura> {
-     |                         ++++++
-
-  error[E0412]: cannot find type `Grandpa` in this scope
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:74:16
-     |
-  74 |         pub grandpa: Grandpa,
-     |                      ^^^^^^^ not found in this scope
-     |
-  help: you might be missing a type parameter
-    --> /Users/workspace/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sp-runtime-41.1.0/src/traits/mod.rs:2091:19
-     |
-  209|         pub struct $name<Grandpa> {
-     |                         +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:173:35
-      |
-  173 |     frame_system::CheckNonZeroSender<Runtime>,
-      |                                      ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:174:33
-      |
-  174 |     frame_system::CheckSpecVersion<Runtime>,
-      |                                    ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:175:31
-      |
-  175 |     frame_system::CheckTxVersion<Runtime>,
-      |                                  ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:176:29
-      |
-  176 |     frame_system::CheckGenesis<Runtime>,
-      |                                ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:177:25
-      |
-  177 |     frame_system::CheckEra<Runtime>,
-      |                            ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:178:27
-      |
-  178 |     frame_system::CheckNonce<Runtime>,
-      |                              ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:179:28
-      |
-  179 |     frame_system::CheckWeight<Runtime>,
-      |                               ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:180:55
-      |
-  180 |     pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
-      |                                                          ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:181:51
-      |
-  181 |     frame_metadata_hash_extension::CheckMetadataHash<Runtime>,
-      |                                                      ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:182:30
-      |
-  182 |     frame_system::WeightReclaim<Runtime>,
-      |                                 ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  172 | pub type TxExtension<Runtime> = (
-      |                     +++++++++
-
-  error[E0412]: cannot find type `RuntimeCall` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:187:39
-      |
-  187 |     generic::UncheckedExtrinsic<Address, RuntimeCall, Signature, TxExtension>;
-      |                                          ^^^^^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  186 | pub type UncheckedExtrinsic<RuntimeCall> =
-      |                            +++++++++++++
-
-  error[E0412]: cannot find type `RuntimeCall` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:190:49
-      |
-  190 | pub type SignedPayload = generic::SignedPayload<RuntimeCall, TxExtension>;
-      |                                                 ^^^^^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  190 | pub type SignedPayload<RuntimeCall> = generic::SignedPayload<RuntimeCall, TxExtension>;
-      |                       +++++++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:200:2
-      |
-  200 |     Runtime,
-      |     ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  199 | pub type Executive<Runtime> = frame_executive::Executive<
-      |                   +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:202:29
-      |
-  202 |     frame_system::ChainContext<Runtime>,
-      |                                ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  199 | pub type Executive<Runtime> = frame_executive::Executive<
-      |                   +++++++++
-
-  error[E0412]: cannot find type `Runtime` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:203:2
-      |
-  203 |     Runtime,
-      |     ^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  199 | pub type Executive<Runtime> = frame_executive::Executive<
-      |                   +++++++++
-
-  error[E0412]: cannot find type `AllPalletsWithSystem` in this scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/lib.rs:204:2
-      |
-  204 |     AllPalletsWithSystem,
-      |     ^^^^^^^^^^^^^^^^^^^^ not found in this scope
-      |
-  help: you might be missing a type parameter
-      |
-  199 | pub type Executive<AllPalletsWithSystem> = frame_executive::Executive<
-      |                   ++++++++++++++++++++++
-
-  warning: unused imports: `EqualPrivilegeOnly` and `WithdrawReasons`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:38:3
-     |
-  38 |         EqualPrivilegeOnly, Currency, LockableCurrency, 
-     |         ^^^^^^^^^^^^^^^^^^
-  39 |         QueryPreimage, StorePreimage, EnsureOrigin, WithdrawReasons
-     |                                                     ^^^^^^^^^^^^^^^
-     |
-     = note: `#[warn(unused_imports)]` on by default
-
-  warning: unused import: `self`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:52:26
-     |
-  52 | use sp_runtime::traits::{self, Convert, OpaqueKeys};
-     |                          ^^^^
-
-  warning: use of deprecated struct `pallet_nomination_pools::adapter::TransferStake`: consider migrating to DelegateStake
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:56:39
-     |
-  56 | use pallet_nomination_pools::adapter::TransferStake;
-     |                                       ^^^^^^^^^^^^^
-     |
-     = note: `#[warn(deprecated)]` on by default
-
-  warning: use of deprecated struct `pallet_nomination_pools::adapter::TransferStake`: consider migrating to DelegateStake
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:281:23
-      |
-  281 |     type StakeAdapter =  TransferStake<Runtime, pallet_staking::Pallet<Runtime>>;
-      |                          ^^^^^^^^^^^^^
-
-  error[E0599]: no method named `create_extrinsics` found for struct `InherentData` in the current scope
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/apis.rs:94:9
-     |
-  94 |             data.create_extrinsics()
-     |                  ^^^^^^^^^^^^^^^^^ method not found in `InherentData`
-
-  error[E0599]: no method named `check_extrinsics` found for struct `InherentData` in the current scope
-     --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/apis.rs:101:9
-      |
-  101 |             data.check_extrinsics(&block)
-      |                  ^^^^^^^^^^^^^^^^ method not found in `InherentData`
-
-  warning: unused import: `Currency`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:38:23
-     |
-  38 |         EqualPrivilegeOnly, Currency, LockableCurrency, 
-     |                             ^^^^^^^^
-
-  warning: unused import: `LockableCurrency`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:38:33
-     |
-  38 |         EqualPrivilegeOnly, Currency, LockableCurrency, 
-     |                                       ^^^^^^^^^^^^^^^^
-
-  warning: unused import: `QueryPreimage`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:39:3
-     |
-  39 |         QueryPreimage, StorePreimage, EnsureOrigin, WithdrawReasons
-     |         ^^^^^^^^^^^^^
-
-  warning: unused import: `StorePreimage`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:39:18
-     |
-  39 |         QueryPreimage, StorePreimage, EnsureOrigin, WithdrawReasons
-     |                        ^^^^^^^^^^^^^
-
-  warning: unused import: `EnsureOrigin`
-    --> /Users/workspace/Desktop/solo-sub-chainv5/runtime/src/configs/mod.rs:39:33
-     |
-  39 |         QueryPreimage, StorePreimage, EnsureOrigin, WithdrawReasons
-     |                                       ^^^^^^^^^^^^
-
-  Some errors have detailed explanations: E0412, E0432, E0433, E0599.
-  For more information about an error, try `rustc --explain E0412`.
-  warning: `solochain-template-runtime` (lib) generated 9 warnings
-  error: could not compile `solochain-template-runtime` (lib) due to 26 previous errors; 9 warnings emitted
+warning: `solochain-template-runtime` (lib) generated 10 warnings (run `cargo fix --lib -p solochain-template-runtime` to apply 3 suggestions)
+    Checking solochain-template-node v0.1.0 (/Users/workspace/Desktop/solo-sub-chainv5/node)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 58.29s

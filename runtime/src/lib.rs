@@ -38,6 +38,7 @@ pub use pallet_preimage;
 pub use pallet_scheduler;
 pub use pallet_transaction_payment;
 pub use pallet_sudo;
+pub use pallet_contracts;
 pub use pallet_staking;
 pub use pallet_template;
 pub use pallet_session;
@@ -272,6 +273,7 @@ mod runtime {
 	#[runtime::pallet_index(15)]
 	pub type Historical = pallet_session::historical;
 
-
+	#[runtime::pallet_index(16)]
+	pub type Contracts = pallet_contracts;
 }
 

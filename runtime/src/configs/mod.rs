@@ -36,7 +36,7 @@ use crate::constants::{currency::*, time::*};
 use frame_support::
 	traits::{
 		EqualPrivilegeOnly, Currency, LockableCurrency, 
-		QueryPreimage, StorePreimage, EnsureOrigin, WithdrawReasons
+		QueryPreimage, StorePreimage, Nothing, EnsureOrigin, WithdrawReasons
 	};
 
 use crate::{UncheckedExtrinsic, SessionKeys};
@@ -52,6 +52,8 @@ use frame_system::offchain::{CreateInherent, CreateTransactionBase};
 use sp_runtime::traits::{self, Convert, OpaqueKeys};
 use alloc::vec;
 use parity_scale_codec::Decode;
+use pallet_contracts::config_preludes::{DepositPerItem, DepositPerByte, DefaultDepositLimit};
+
 
 use pallet_nomination_pools::adapter::TransferStake;
 use pallet_session::PeriodicSessions;
@@ -64,6 +66,7 @@ use frame_election_provider_support::bounds::{ElectionBounds, DataProviderBounds
 use frame_election_provider_support::{ElectionDataProvider, SequentialPhragmen, BalancingConfig, onchain};
 use sp_runtime::transaction_validity::TransactionPriority;
 use sp_runtime::FixedU128;
+use sp_core::H256;
 
 // Local module imports
 use super::{
@@ -405,6 +408,7 @@ parameter_types!{
 }
 
 
+
 impl pallet_election_provider_multi_phase::MinerConfig for Runtime {
 	type AccountId = AccountId;
 	type MaxLength = MinerMaxLength;
@@ -501,6 +505,56 @@ impl pallet_election_provider_multi_phase::BenchmarkingConfig for ElectionProvid
 	const MAXIMUM_TARGETS: u32 = 300;
 }
 
+parameter_types! {
+	pub const MaxCodeLen: u32 = 512 * 1024;
+	pub const MaxStorageKeyLen: u32 = 128;
+	pub Schedule: pallet_contracts::Schedule<Runtime> = pallet_contracts::Schedule::default();
+	pub const CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
+
+}
+
+pub struct DummyRandomness;
+impl frame_support::traits::Randomness<H256, BlockNumber> for DummyRandomness {
+    fn random(_subject: &[u8]) -> (H256, BlockNumber) {
+        (Default::default(), 0)
+    }
+}
+
+impl pallet_contracts::Config for Runtime{
+	type Time = Timestamp;
+	type Randomness = DummyRandomness;
+	type Currency = Balances;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	type RuntimeHoldReason = RuntimeHoldReason;
+	type CallFilter = Nothing;
+	type WeightPrice = TransactionPayment;
+	type WeightInfo = pallet_contracts::weights::SubstrateWeight<Runtime>;
+	type ChainExtension = (); 
+	type Schedule = Schedule;
+	type CallStack = [pallet_contracts::Frame<Self>; 5];
+
+	type DepositPerByte = DepositPerByte;
+	type DepositPerItem = DepositPerItem;
+	type DefaultDepositLimit = DefaultDepositLimit;
+	type CodeHashLockupDepositPercent = CodeHashLockupDepositPercent; // 30%
+	type AddressGenerator = pallet_contracts::DefaultAddressGenerator;
+	type MaxCodeLen = MaxCodeLen;
+	type MaxStorageKeyLen = MaxStorageKeyLen;
+	type MaxTransientStorageSize = ConstU32<{ 64 * 1024 }>;
+	type MaxDelegateDependencies = ConstU32<32>;
+	type UnsafeUnstableInterface = ConstBool<false>;
+	type MaxDebugBufferLen = ConstU32<{ 2 * 1024 * 1024 }>;
+
+	type UploadOrigin = frame_system::EnsureSigned<Self::AccountId>;
+	type InstantiateOrigin = frame_system::EnsureSigned<Self::AccountId>;
+	type Migrations = ();
+	type Debug = ();
+	type Environment = ();
+	type ApiVersion = ();
+	type Xcm = (); 
+
+}
 
 impl pallet_election_provider_multi_phase::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
