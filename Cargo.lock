@@ -10035,7 +10035,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "solochain-template-node"
+name = "solo-substrate-node"
 version = "0.1.0"
 dependencies = [
  "clap",
@@ -10059,7 +10059,7 @@ dependencies = [
  "sc-telemetry",
  "sc-transaction-pool",
  "sc-transaction-pool-api",
- "solochain-template-runtime",
+ "solo-substrate-runtime",
  "sp-api",
  "sp-block-builder",
  "sp-blockchain",
@@ -10076,7 +10076,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "solochain-template-runtime"
+name = "solo-substrate-runtime"
 version = "0.1.0"
 dependencies = [
  "frame-benchmarking",

@@ -24,53 +24,71 @@
 // For more information, please refer to <http://unlicense.org>
 
 // Substrate and Polkadot dependencies
-use frame_support::{
-	derive_impl, parameter_types,
-	traits::{ConstBool, ConstU128, ConstU32, ConstU64, ConstU8, VariantCountOf},
-	weights::{
-		constants::{RocksDbWeight, WEIGHT_REF_TIME_PER_SECOND},
-		IdentityFee, Weight,
-	},
-};
-use crate::constants::{currency::*, time::*};
-use frame_support::
-	traits::{
-		EqualPrivilegeOnly, Currency, LockableCurrency, 
-		QueryPreimage, StorePreimage, Nothing, EnsureOrigin, WithdrawReasons
-	};
-
-use crate::{UncheckedExtrinsic, SessionKeys};
-use sp_runtime::curve::PiecewiseLinear;
-use frame_system::EnsureRoot;
-use frame_system::limits::{BlockLength, BlockWeights};
-use pallet_transaction_payment::{ConstFeeMultiplier, FungibleAdapter, Multiplier};
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_runtime::{traits::One, Perbill};
-use sp_version::RuntimeVersion;
-use frame_support::pallet_prelude::{DispatchClass, Get};
-use frame_system::offchain::{CreateInherent, CreateTransactionBase};
-use sp_runtime::traits::{self, Convert, OpaqueKeys};
+// Std / Core
 use alloc::vec;
+
+// External Crates
 use parity_scale_codec::Decode;
-use pallet_contracts::config_preludes::{DepositPerItem, DepositPerByte, DefaultDepositLimit};
 
+// Frame Support
+use frame_support::{
+    derive_impl,
+    pallet_prelude::{DispatchClass, Get},
+    parameter_types,
+    traits::{
+        ConstBool, ConstU128, ConstU32, ConstU64, ConstU8,
+        Nothing, VariantCountOf, EqualPrivilegeOnly
+    },
+    weights::{
+        constants::{BlockExecutionWeight, RocksDbWeight, WEIGHT_REF_TIME_PER_SECOND},
+        IdentityFee, Weight,
+    },
+    PalletId,
+};
 
+// Frame System
+use frame_system::{
+    EnsureRoot,
+    limits::{BlockLength, BlockWeights},
+    offchain::{CreateInherent, CreateTransactionBase},
+};
+
+// Pallets
+use pallet_contracts::config_preludes::{DefaultDepositLimit, DepositPerByte, DepositPerItem};
+use pallet_election_provider_multi_phase::{
+    self as election_provider_multi_phase, SolutionAccuracyOf,
+};
 use pallet_nomination_pools::adapter::TransferStake;
 use pallet_session::PeriodicSessions;
-use frame_support::PalletId;
-use sp_staking::{SessionIndex, EraIndex};
-use frame_support::weights::constants::BlockExecutionWeight;
-use pallet_election_provider_multi_phase::{self as election_provider_multi_phase, SolutionAccuracyOf};
+use pallet_transaction_payment::{ConstFeeMultiplier, FungibleAdapter, Multiplier};
 
-use frame_election_provider_support::bounds::{ElectionBounds, DataProviderBounds, SizeBound, CountBound};
-use frame_election_provider_support::{ElectionDataProvider, SequentialPhragmen, BalancingConfig, onchain};
-use sp_runtime::transaction_validity::TransactionPriority;
-use sp_runtime::FixedU128;
+// Sp Runtime
+use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::H256;
+use sp_runtime::{
+    curve::PiecewiseLinear,
+    traits::{Convert, One, OpaqueKeys},
+    transaction_validity::TransactionPriority,
+    FixedU128, Perbill,
+};
+use sp_staking::{EraIndex, SessionIndex};
+use sp_version::RuntimeVersion;
+
+// Election Provider Support
+use frame_election_provider_support::{
+    bounds::{CountBound, DataProviderBounds, ElectionBounds, SizeBound},
+    onchain, BalancingConfig, ElectionDataProvider, SequentialPhragmen,
+};
+
+// Local Crate
+use crate::{
+    constants::{currency::*, time::*},
+    SessionKeys, UncheckedExtrinsic,
+};
 
 // Local module imports
 use super::{
-	AccountId, Aura, Balance, NominationPools, Democracy, Timestamp, Session, Balances, Staking, TransactionPayment, ElectionProviderMultiPhase, Block, BlockNumber, Hash, Nonce, PalletInfo, Runtime,
+	AccountId, Aura, Balance, NominationPools, Timestamp, Session, Balances, Staking, TransactionPayment, ElectionProviderMultiPhase, Block, BlockNumber, Hash, Nonce, PalletInfo, Runtime,
 	RuntimeCall, RuntimeEvent, RuntimeFreezeReason, RuntimeHoldReason, RuntimeOrigin, OriginCaller, RuntimeTask,
 	System, EXISTENTIAL_DEPOSIT, SLOT_DURATION, VERSION,
 };
@@ -241,7 +259,7 @@ impl pallet_scheduler::Config for Runtime {
 
 	type MaximumWeight = SchedulerMaxWeight;
 	type ScheduleOrigin = frame_system::EnsureRoot<Self::AccountId>;
-	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
+	type OriginPrivilegeCmp = EqualPrivilegeOnly;
 	type MaxScheduledPerBlock = ConstU32<50>;
 	type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
 	type Preimages = pallet_preimage::Pallet<Runtime>;
