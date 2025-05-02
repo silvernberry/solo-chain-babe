@@ -16,6 +16,7 @@ members = [
     "substrate/frame/democracy",
     "substrate/frame/grandpa",
     "substrate/frame/contracts",
+    "substrate/frame/contracts/fixtures",
     "substrate/frame/staking",
 
 ]
@@ -61,7 +62,6 @@ zero-prefixed-literal = { level = "allow", priority = 2 }            # 00_1000_0
 
 [patch.crates-io]
 pallet-contracts-fixtures = { path = "substrate/frame/contracts/fixtures"}
-
 
 [workspace.dependencies]
 
@@ -109,7 +109,6 @@ frame-support = { version = "40.1.0", default-features = false }
 frame-system-benchmarking = { version = "40.0.0", default-features = false }
 frame-system-rpc-runtime-api = { version = "36.0.0", default-features = false }
 frame-try-runtime = { version = "0.46.0", default-features = false }
-pallet-aura = { version = "39.0.0", default-features = false }
 pallet-balances = { version = "41.1.0", default-features = false }
 pallet-sudo = { version = "40.0.0", default-features = false }
 pallet-session = { version = "40.0.0", default-features = false }
@@ -128,10 +127,10 @@ polkavm-derive = "0.18.0"
 docify = { version = "0.2.9" }
 pallet-examples = { version = "7.0.0", default-features = false }
 
-
 # local pallets
 
 pallet-babe = { path = "substrate/frame/babe", default-features = false  }
+pallet-aura = { path = "substrate/frame/aura", default-features = false }
 pallet-staking = { path = "substrate/frame/staking", default-features = false }
 pallet-democracy = { path = "substrate/frame/democracy", default-features = false }
 pallet-grandpa = { path = "substrate/frame/grandpa", default-features = false }
@@ -179,6 +178,8 @@ xcm-executor =  { version = "19.1.0", default-features = false,  package = "stag
 xcm-simulator =  { version = "20.0.0", default-features = false }
 assert_matches = { version = "1.5.0" }
 pretty_assertions = { version = "1.3.0" }
+secp256k1-sys = { version = "0.9", default-features = false, features = ["precompiled"] }
+
 
 # frame/contracts/proc-macro
 
@@ -221,8 +222,11 @@ pallet-election-provider-multi-phase = { version = "39.1.0", default-features = 
 pallet-bag-list = { version = "39.1.0", default-features = false}
 pallet-nomination-pools =  { version = "38.1.0", default-features = false}
 pallet-delegated-staking = { version = "7.0.0", default-features = false }
+pallet-im-online = { version = "39.1.0", default-features = false }
+
 # frame/staking/reward-curve
 
 proc-macro-crate = { version = "3.0.0" }
 sp-arithmetic = { version = "26.1.0", default-features = false }
 
+getrandom = { version = "0.2", features = ["js"] }

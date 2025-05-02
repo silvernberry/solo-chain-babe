@@ -62,6 +62,7 @@ use pallet_nomination_pools::adapter::TransferStake;
 use pallet_session::PeriodicSessions;
 use pallet_transaction_payment::{ConstFeeMultiplier, FungibleAdapter, Multiplier};
 
+
 // Sp Runtime
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::H256;
@@ -88,7 +89,7 @@ use crate::{
 
 // Local module imports
 use super::{
-	AccountId, Aura, Balance, NominationPools, Timestamp, Session, Balances, Staking, TransactionPayment, ElectionProviderMultiPhase, Block, BlockNumber, Hash, Nonce, PalletInfo, Runtime,
+	AccountId, Aura, Balance, NominationPools, Timestamp,  Session, Balances, Staking, TransactionPayment, ElectionProviderMultiPhase, Block, BlockNumber, Hash, Nonce, PalletInfo, Runtime,
 	RuntimeCall, RuntimeEvent, RuntimeFreezeReason, RuntimeHoldReason, RuntimeOrigin, OriginCaller, RuntimeTask,
 	System, EXISTENTIAL_DEPOSIT, SLOT_DURATION, VERSION,
 };
@@ -524,7 +525,7 @@ impl pallet_election_provider_multi_phase::BenchmarkingConfig for ElectionProvid
 }
 
 parameter_types! {
-	pub const MaxCodeLen: u32 = 512 * 1024;
+	pub const MaxCodeLen: u32 = 128 * 1024;
 	pub const MaxStorageKeyLen: u32 = 128;
 	pub Schedule: pallet_contracts::Schedule<Runtime> = pallet_contracts::Schedule::default();
 	pub const CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
@@ -604,6 +605,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type WeightInfo = election_provider_multi_phase::weights::SubstrateWeight<Runtime>;
 
 }
+
 
 parameter_types! {
 	pub FeeMultiplier: Multiplier = Multiplier::one();
