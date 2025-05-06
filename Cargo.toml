@@ -12,6 +12,7 @@ members = [
     "node",
     "pallets/template",
     "runtime",
+    "substrate/frame",
     "substrate/frame/babe",
     "substrate/frame/democracy",
     "substrate/frame/grandpa",
@@ -103,6 +104,7 @@ substrate-frame-rpc-system = { version = "43.0.0", default-features = false }
 substrate-build-script-utils = { version = "11.0.0", default-features = false }
 parity-scale-codec = { version = "3.7.4", features = ["derive"], default-features = false }
 scale-info = { version = "2.11.6", features = ["derive"], default-features = false }
+frame = { path = "substrate/frame", default-features = false, package = "polkadot-sdk-frame" }
 frame-benchmarking = { version = "40.0.0", default-features = false }
 frame-executive = { version = "40.0.0", default-features = false }
 frame-support = { version = "40.1.0", default-features = false }
@@ -221,8 +223,6 @@ substrate-test-utils  = { version = "3.0.0", default-features = false }
 pallet-election-provider-multi-phase = { version = "39.1.0", default-features = false}
 pallet-bag-list = { version = "39.1.0", default-features = false}
 pallet-nomination-pools =  { version = "38.1.0", default-features = false}
-pallet-delegated-staking = { version = "7.0.0", default-features = false }
-pallet-im-online = { version = "39.1.0", default-features = false }
 
 # frame/staking/reward-curve
 

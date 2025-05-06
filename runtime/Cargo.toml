@@ -31,7 +31,6 @@ pallet-staking.workspace = true
 pallet-insecure-randomness-collective-flip.workspace = true
 pallet-staking-reward-curve.workspace = true
 pallet-nomination-pools.workspace = true
-pallet-delegated-staking.workspace = true
 pallet-sudo.workspace = true
 pallet-template.workspace = true
 pallet-timestamp.workspace = true
@@ -100,7 +99,6 @@ std = [
 	"pallet-staking/std",
 	"pallet-insecure-randomness-collective-flip/std",
 	"pallet-transaction-payment/std",
-	"pallet-delegated-staking/std",
 	"scale-info/std",
 	"serde_json/std",
 	"sp-api/std",
@@ -132,6 +130,9 @@ runtime-benchmarks = [
 	"pallet-template/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"pallet-transaction-payment/runtime-benchmarks",
+	"pallet-contracts/runtime-benchmarks",
+	"pallet-staking/runtime-benchmarks",
+	"pallet-democracy/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 ]
 

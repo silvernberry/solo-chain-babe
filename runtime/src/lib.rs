@@ -3,9 +3,13 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+
 pub mod apis;
+
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarks;
+
+
 pub mod configs;
 pub mod constants;
 extern crate alloc;
@@ -44,6 +48,7 @@ pub use pallet_template;
 pub use pallet_session;
 pub use pallet_nomination_pools;
 pub use pallet_election_provider_multi_phase;
+pub use pallet_insecure_randomness_collective_flip;
 
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
@@ -94,6 +99,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	transaction_version: 1,
 	system_version: 1,
 };
+
 
 mod block_times {
 	/// This determines the average expected block time that we are targeting. Blocks will be
@@ -275,7 +281,5 @@ mod runtime {
 
 	#[runtime::pallet_index(16)]
 	pub type Contracts = pallet_contracts;
-
-
 }
 

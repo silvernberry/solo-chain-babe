@@ -55,6 +55,7 @@ use frame_system::{
 
 // Pallets
 use pallet_contracts::config_preludes::{DefaultDepositLimit, DepositPerByte, DepositPerItem};
+use pallet_contracts::migration::{v15, v16};
 use pallet_election_provider_multi_phase::{
     self as election_provider_multi_phase, SolutionAccuracyOf,
 };
@@ -114,6 +115,7 @@ parameter_types! {
 /// but overridden as needed.
 #[derive_impl(frame_system::config_preludes::SolochainDefaultConfig)]
 impl frame_system::Config for Runtime {
+
 	/// The block type for the runtime.
 	type Block = Block;
 	/// Block & extrinsics weights: base values and limits.
@@ -146,6 +148,7 @@ impl sp_runtime::traits::Convert<usize, Balance> for SignedDepositBase {
 		(v as u128) * 1_000_000_000
 	}
 }
+
 
 impl pallet_aura::Config for Runtime {
 	type AuthorityId = AuraId;
@@ -341,6 +344,7 @@ pub struct StakingBenchmarkingConfig;
 impl pallet_staking::BenchmarkingConfig for StakingBenchmarkingConfig {
 	type MaxNominators = ConstU32<1000>;
 	type MaxValidators = ConstU32<1000>;
+	
 }
 
 pallet_staking_reward_curve::build! {
@@ -567,7 +571,10 @@ impl pallet_contracts::Config for Runtime{
 
 	type UploadOrigin = frame_system::EnsureSigned<Self::AccountId>;
 	type InstantiateOrigin = frame_system::EnsureSigned<Self::AccountId>;
-	type Migrations = ();
+	type Migrations = (
+		pallet_contracts::migration::v15::Migration<Runtime>,
+		pallet_contracts::migration::v16::Migration<Runtime>,
+	);
 	type Debug = ();
 	type Environment = ();
 	type ApiVersion = ();
