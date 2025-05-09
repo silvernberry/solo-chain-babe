@@ -6256,33 +6256,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-babe"
-version = "40.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-election-provider-support",
- "frame-support 40.1.0",
- "frame-system 40.1.0",
- "log",
- "pallet-authorship",
- "pallet-balances 41.1.0",
- "pallet-offences",
- "pallet-session",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-timestamp",
- "parity-scale-codec",
- "scale-info",
- "sp-application-crypto 40.1.0",
- "sp-consensus-babe",
- "sp-core 36.1.0",
- "sp-io 40.0.0",
- "sp-runtime 41.1.0",
- "sp-session",
- "sp-staking 38.0.0",
-]
-
-[[package]]
 name = "pallet-bags-list"
 version = "39.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10520,6 +10493,7 @@ dependencies = [
 name = "solo-substrate-runtime"
 version = "0.1.0"
 dependencies = [
+ "array-bytes",
  "frame-benchmarking",
  "frame-election-provider-support",
  "frame-executive",
@@ -10530,6 +10504,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "pallet-aura",
+ "pallet-authorship",
  "pallet-bags-list",
  "pallet-balances 41.1.0",
  "pallet-contracts",

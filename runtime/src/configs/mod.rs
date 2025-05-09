@@ -60,9 +60,10 @@ use pallet_election_provider_multi_phase::{
     self as election_provider_multi_phase, SolutionAccuracyOf,
 };
 use pallet_nomination_pools::adapter::TransferStake;
+use pallet_bags_list as bags_list;
+
 use pallet_session::PeriodicSessions;
 use pallet_transaction_payment::{ConstFeeMultiplier, FungibleAdapter, Multiplier};
-
 
 // Sp Runtime
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -79,7 +80,7 @@ use sp_version::RuntimeVersion;
 // Election Provider Support
 use frame_election_provider_support::{
     bounds::{CountBound, DataProviderBounds, ElectionBounds, SizeBound},
-    onchain, BalancingConfig, ElectionDataProvider, SequentialPhragmen,
+    onchain, BalancingConfig, ElectionDataProvider, SequentialPhragmen, VoteWeight,
 };
 
 // Local Crate
@@ -87,6 +88,7 @@ use crate::{
     constants::{currency::*, time::*},
     SessionKeys, UncheckedExtrinsic,
 };
+use crate::voter_bags;
 
 // Local module imports
 use super::{
@@ -335,6 +337,18 @@ impl pallet_session::Config for Runtime {
 	type DisablingStrategy = (); 
 }
 
+parameter_types! {
+	pub const BagThresholds: &'static [u64] = &voter_bags::THRESHOLDS;
+}
+
+impl pallet_bags_list::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type ScoreProvider = Staking;
+	type BagThresholds = BagThresholds;
+	type Score = u64;
+	type WeightInfo = ();
+}
+
 impl pallet_session::historical::Config for Runtime {
 	type FullIdentification = pallet_staking::Exposure<AccountId, Balance>;
 	type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
@@ -392,12 +406,12 @@ impl pallet_staking::Config for Runtime {
 	type EraPayout = pallet_staking::ConvertCurve<RewardCurve>;
 	type NextNewSession = Session ;
 	type MaxExposurePageSize = ConstU32<4096>;
-	type VoterList = pallet_staking::UseNominatorsAndValidatorsMap<Self>;
+	type VoterList =  pallet_bags_list::Pallet<Self>;
 	type TargetList = pallet_staking::UseValidatorsMap<Self>;
 	type MaxUnlockingChunks = ConstU32<32>;
 	type MaxControllersInDeprecationBatch = ConstU32<32>;
 	type EventListeners = NominationPools ;
-	type Filter = frame_support::traits::Everything;
+	type Filter = frame_support::traits::Nothing;
 	type BenchmarkingConfig = StakingBenchmarkingConfig;
 	type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
 }

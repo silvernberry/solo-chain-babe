@@ -15,7 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{AccountId, BalancesConfig, RuntimeGenesisConfig, SudoConfig};
+use crate::{constants::currency::*, AccountId, Balance, BalancesConfig, SessionConfig, RuntimeGenesisConfig, StakingConfig, SudoConfig};
 use alloc::{vec, vec::Vec};
 use frame_support::build_struct_json_patch;
 use serde_json::Value;
@@ -23,76 +23,101 @@ use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_consensus_grandpa::AuthorityId as GrandpaId;
 use sp_genesis_builder::{self, PresetId};
 use sp_keyring::Sr25519Keyring;
+use pallet_staking::{StakerStatus, GenesisConfig as StakingGenesisConfig};
+use sp_runtime::Perbill;
+use sp_core::{crypto::get_public_from_string_or_panic, sr25519};
+use array_bytes::hex_n_into_unchecked;
+use crate::SessionKeys;
 
-// Returns the genesis config presets populated with given parameters.
-fn testnet_genesis(
-	initial_authorities: Vec<(AuraId, GrandpaId)>,
+
+pub const ENDOWMENT: Balance = 10_000_000 * DOLLARS;
+pub const STASH: Balance = ENDOWMENT / 1000;
+
+pub struct StakingPlaygroundConfig {
+	pub validator_count: u32,
+	pub minimum_validator_count: u32,
+}
+
+/// The staker type as supplied ot the Staking config.
+pub type Staker = (AccountId, AccountId, Balance, StakerStatus<AccountId>);
+
+/// Helper function to create RuntimeGenesisConfig json patch for testing.
+pub fn kitchensink_genesis(
+	initial_authorities: Vec<(AccountId, AccountId, SessionKeys)>,
+	root_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
-	root: AccountId,
-) -> Value {
+	stakers: Vec<Staker>,
+	staking_playground_config: Option<StakingPlaygroundConfig>,
+) -> serde_json::Value {
+	let (validator_count, min_validator_count) = match staking_playground_config {
+		Some(c) => (c.validator_count, c.minimum_validator_count),
+		None => {
+			let authorities_count = initial_authorities.len() as u32;
+			(authorities_count, authorities_count)
+		},
+	};
+
+	let collective = collective(&endowed_accounts);
+
 	build_struct_json_patch!(RuntimeGenesisConfig {
 		balances: BalancesConfig {
-			balances: endowed_accounts
+			balances: endowed_accounts.iter().cloned().map(|x| (x, ENDOWMENT)).collect(),
+			..Default::default()
+		},
+		session: SessionConfig {
+			keys: initial_authorities
 				.iter()
-				.cloned()
-				.map(|k| (k, 1u128 << 60))
-				.collect::<Vec<_>>(),
+				.map(|x| { (x.0.clone(), x.1.clone(), x.2.clone()) })
+				.collect(),
 		},
-		aura: pallet_aura::GenesisConfig {
-			authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect::<Vec<_>>(),
+		staking: StakingConfig {
+			validator_count,
+			minimum_validator_count: min_validator_count,
+			invulnerables: initial_authorities
+				.iter()
+				.map(|x| x.0.clone())
+				.collect::<Vec<_>>()
+				.try_into()
+				.expect("Too many invulnerable validators: upper limit is MaxInvulnerables from pallet staking config"),
+			slash_reward_fraction: Perbill::from_percent(10),
+			stakers,
 		},
-		grandpa: pallet_grandpa::GenesisConfig {
-			authorities: initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect::<Vec<_>>(),
-		},
-		sudo: SudoConfig { key: Some(root) },
 	})
-}
-
-/// Return the development genesis config.
-pub fn development_config_genesis() -> Value {
-	testnet_genesis(
-		vec![(
-			sp_keyring::Sr25519Keyring::Alice.public().into(),
-			sp_keyring::Ed25519Keyring::Alice.public().into(),
-		)],
-		vec![
-			Sr25519Keyring::Alice.to_account_id(),
-			Sr25519Keyring::Bob.to_account_id(),
-			Sr25519Keyring::AliceStash.to_account_id(),
-			Sr25519Keyring::BobStash.to_account_id(),
-		],
-		sp_keyring::Sr25519Keyring::Alice.to_account_id(),
-	)
-}
-
-/// Return the local genesis config preset.
-pub fn local_config_genesis() -> Value {
-	testnet_genesis(
-		vec![
-			(
-				sp_keyring::Sr25519Keyring::Alice.public().into(),
-				sp_keyring::Ed25519Keyring::Alice.public().into(),
-			),
-			(
-				sp_keyring::Sr25519Keyring::Bob.public().into(),
-				sp_keyring::Ed25519Keyring::Bob.public().into(),
-			),
-		],
-		Sr25519Keyring::iter()
-			.filter(|v| v != &Sr25519Keyring::One && v != &Sr25519Keyring::Two)
-			.map(|v| v.to_account_id())
-			.collect::<Vec<_>>(),
-		Sr25519Keyring::Alice.to_account_id(),
-	)
 }
 
 /// Provides the JSON representation of predefined genesis config for given `id`.
 pub fn get_preset(id: &PresetId) -> Option<Vec<u8>> {
+	// Note: Can't use `Sr25519Keyring::Alice.to_seed()` because the seed comes with `//`.
+	let (alice_stash, alice, alice_session_keys) = authority_keys_from_seed("Alice");
+	let (bob_stash, _bob, bob_session_keys) = authority_keys_from_seed("Bob");
+
+	let endowed = well_known_including_eth_accounts();
+
 	let patch = match id.as_ref() {
-		sp_genesis_builder::DEV_RUNTIME_PRESET => development_config_genesis(),
-		sp_genesis_builder::LOCAL_TESTNET_RUNTIME_PRESET => local_config_genesis(),
+		sp_genesis_builder::DEV_RUNTIME_PRESET => kitchensink_genesis(
+			// Use stash as controller account, otherwise grandpa can't load the authority set at
+			// genesis.
+			vec![(alice_stash.clone(), alice_stash.clone(), alice_session_keys)],
+			alice.clone(),
+			endowed,
+			vec![validator(alice_stash.clone())],
+			None,
+		),
+		sp_genesis_builder::LOCAL_TESTNET_RUNTIME_PRESET => kitchensink_genesis(
+			vec![
+				// Use stash as controller account, otherwise grandpa can't load the authority set
+				// at genesis.
+				(alice_stash.clone(), alice_stash.clone(), alice_session_keys),
+				(bob_stash.clone(), bob_stash.clone(), bob_session_keys),
+			],
+			alice,
+			endowed,
+			vec![validator(alice_stash), validator(bob_stash)],
+			None,
+		),
 		_ => return None,
 	};
+
 	Some(
 		serde_json::to_string(&patch)
 			.expect("serialization to json is expected to work. qed.")
@@ -106,4 +131,71 @@ pub fn preset_names() -> Vec<PresetId> {
 		PresetId::from(sp_genesis_builder::DEV_RUNTIME_PRESET),
 		PresetId::from(sp_genesis_builder::LOCAL_TESTNET_RUNTIME_PRESET),
 	]
+}
+
+/// Sets up the `account` to be a staker of validator variant as supplied to the
+/// staking config.
+pub fn validator(account: AccountId) -> Staker {
+	// validator, controller, stash, staker status
+	(account.clone(), account, STASH, StakerStatus::Validator)
+}
+
+/// Extract some accounts from endowed to be put into the collective.
+fn collective(endowed: &[AccountId]) -> Vec<AccountId> {
+	const MAX_COLLECTIVE_SIZE: usize = 50;
+	let endowed_accounts_count = endowed.len();
+	endowed
+		.iter()
+		.take(((endowed_accounts_count + 1) / 2).min(MAX_COLLECTIVE_SIZE))
+		.cloned()
+		.collect()
+}
+
+/// The Keyring's wellknown accounts + Alith and Baltathar.
+///
+/// Some integration tests require these ETH accounts.
+pub fn well_known_including_eth_accounts() -> Vec<AccountId> {
+	Sr25519Keyring::well_known()
+		.map(|k| k.to_account_id())
+		.chain([
+			// subxt_signer::eth::dev::alith()
+			array_bytes::hex_n_into_unchecked(
+				"f24ff3a9cf04c71dbc94d0b566f7a27b94566caceeeeeeeeeeeeeeeeeeeeeeee",
+			),
+			// subxt_signer::eth::dev::baltathar()
+			array_bytes::hex_n_into_unchecked(
+				"3cd0a705a2dc65e5b1e1205896baa2be8a07c6e0eeeeeeeeeeeeeeeeeeeeeeee",
+			),
+		])
+		.collect::<Vec<_>>()
+}
+
+/// Helper function to generate stash, controller and session key from seed.
+///
+/// Note: `//` is prepended internally.
+pub fn authority_keys_from_seed(seed: &str) -> (AccountId, AccountId, SessionKeys) {
+	(
+		get_public_from_string_or_panic::<sr25519::Public>(&alloc::format!("{seed}//stash")).into(),
+		get_public_from_string_or_panic::<sr25519::Public>(seed).into(),
+		session_keys_from_seed(seed),
+	)
+}
+
+pub fn session_keys(
+	grandpa: GrandpaId,
+	aura: AuraId,
+) -> SessionKeys {
+	SessionKeys { grandpa, aura}
+}
+
+/// We have this method as there is no straight forward way to convert the
+/// account keyring into these ids.
+///
+/// Note: `//` is prepended internally.
+pub fn session_keys_from_seed(seed: &str) -> SessionKeys {
+	session_keys(
+		get_public_from_string_or_panic::<GrandpaId>(seed),
+		get_public_from_string_or_panic::<AuraId>(seed),
+
+	)
 }

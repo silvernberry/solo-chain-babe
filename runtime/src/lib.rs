@@ -9,7 +9,7 @@ pub mod apis;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarks;
 
-
+pub mod voter_bags;
 pub mod configs;
 pub mod constants;
 extern crate alloc;
@@ -44,8 +44,10 @@ pub use pallet_transaction_payment;
 pub use pallet_sudo;
 pub use pallet_contracts;
 pub use pallet_staking;
+pub use pallet_authorship;
 pub use pallet_template;
 pub use pallet_session;
+pub use pallet_bags_list;
 pub use pallet_nomination_pools;
 pub use pallet_election_provider_multi_phase;
 pub use pallet_insecure_randomness_collective_flip;
@@ -281,5 +283,8 @@ mod runtime {
 
 	#[runtime::pallet_index(16)]
 	pub type Contracts = pallet_contracts;
+
+	#[runtime::pallet_index(17)]
+	pub type BagList = pallet_bags_list;
 }
 

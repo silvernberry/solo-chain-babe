@@ -13,7 +13,6 @@ members = [
     "pallets/template",
     "runtime",
     "substrate/frame",
-    "substrate/frame/babe",
     "substrate/frame/democracy",
     "substrate/frame/grandpa",
     "substrate/frame/contracts",
@@ -128,20 +127,6 @@ secp256k1 = {version = "0.27", default-features = false, features = ["rust"] }
 polkavm-derive = "0.18.0"
 docify = { version = "0.2.9" }
 pallet-examples = { version = "7.0.0", default-features = false }
-
-# local pallets
-
-pallet-babe = { path = "substrate/frame/babe", default-features = false  }
-pallet-aura = { path = "substrate/frame/aura", default-features = false }
-pallet-staking = { path = "substrate/frame/staking", default-features = false }
-pallet-democracy = { path = "substrate/frame/democracy", default-features = false }
-pallet-grandpa = { path = "substrate/frame/grandpa", default-features = false }
-pallet-contracts = { path = "substrate/frame/contracts", default-features = false }
-pallet-contracts-fixtures = { path = "substrate/frame/contracts/fixtures", default-features = false }
-pallet-staking-reward-curve = { path = "substrate/frame/staking/reward-curve", default-features = false }
-
-# frame/babe
-
 log = { version = "0.4.22", default-features = false }
 sp-application-crypto  = { version = "40.1.0", default-features = false }
 sp-consensus-babe = { version = "0.42.1", default-features = false }
@@ -149,6 +134,16 @@ sp-staking = { version = "38.0.0", default-features = false }
 frame-election-provider-support = { version = "40.1.0", default-features = false }
 pallet-authorship = { version = "40.0.0", default-features = false }
 pallet-offences = { version = "39.0.0", default-features = false }
+
+# local pallets
+
+pallet-aura = { path = "substrate/frame/aura", default-features = false }
+pallet-staking = { path = "substrate/frame/staking", default-features = false }
+pallet-democracy = { path = "substrate/frame/democracy", default-features = false }
+pallet-grandpa = { path = "substrate/frame/grandpa", default-features = false }
+pallet-contracts = { path = "substrate/frame/contracts", default-features = false }
+pallet-contracts-fixtures = { path = "substrate/frame/contracts/fixtures", default-features = false }
+pallet-staking-reward-curve = { path = "substrate/frame/staking/reward-curve", default-features = false }
 
 
 # frame/contracts/fixtures
