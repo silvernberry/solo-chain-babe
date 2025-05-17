@@ -40,6 +40,11 @@ sc-consensus-grandpa.default-features = true
 sc-consensus-grandpa.workspace = true
 sc-consensus.default-features = true
 sc-consensus.workspace = true
+sc-consensus-babe.workspace = true
+sc-network-sync.workspace = true
+sc-storage-monitor.workspace = true
+sc-network-common.workspace = true
+sc-rpc-api.workspace = true
 sc-executor.default-features = true
 sc-executor.workspace = true
 sc-network.default-features = true
@@ -57,6 +62,8 @@ sc-transaction-pool.workspace = true
 solo-substrate-runtime.workspace = true
 sp-api.default-features = true
 sp-api.workspace = true
+sp-consensus.workspace = true
+sc-consensus-epochs.workspace = true
 sp-block-builder.default-features = true
 sp-block-builder.workspace = true
 sp-blockchain.default-features = true
@@ -79,6 +86,8 @@ sp-timestamp.default-features = true
 sp-timestamp.workspace = true
 substrate-frame-rpc-system.default-features = true
 substrate-frame-rpc-system.workspace = true
+sp-consensus-babe.workspace = true
+
 
 [build-dependencies]
 substrate-build-script-utils.default-features = true

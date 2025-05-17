@@ -1,7 +1,8 @@
+// node/src/chain_spec.rs
+
 use sc_service::ChainType;
 use solo_substrate_runtime::WASM_BINARY;
 
-/// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
 pub type ChainSpec = sc_service::GenericChainSpec;
 
 pub fn development_chain_spec() -> Result<ChainSpec, String> {

@@ -1,26 +1,22 @@
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
 use futures::FutureExt;
-use std::error::Error as StdError;
-use sp_consensus::Error as ConsensusError;
-use sc_client_api::{Backend, BlockBackend, HeaderBackend}; // Removed ExecutorProvider, added HeaderBackend
+use sc_client_api::{Backend, BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, BabeLink, SlotProportion, BabeParams, import_queue as babe_import_queue};
 use sc_consensus_grandpa::SharedVoterState;
 use sc_service::{error::Error as ServiceError, Configuration, TaskManager, WarpSyncConfig};
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use solo_substrate_runtime::{self, apis::RuntimeApi, opaque::Block};
-use sp_consensus_babe::{self as sp_consensus_babe, inherents::InherentDataProvider, SlotDuration}; // Use SlotDuration
+use sp_consensus_babe::{self as sp_consensus_babe, inherents::InherentDataProvider, slot_duration};
+use sc_consensus::CanAuthorWithNativeVersion;
 use std::{sync::Arc, time::Duration};
-use sp_api::ProvideRuntimeApi; // Added for .runtime_api()
-use sp_consensus_babe::BabeApi;
 
-// --- Fix: Use correct HostFunctions and WasmExecutor as in service_2025.rs ---
-pub type HostFunctions = sp_io::SubstrateHostFunctions;
-pub type RuntimeExecutor = sc_executor::WasmExecutor<HostFunctions>;
-
-// --- Fix: Use correct FullClient type as in service_2025.rs ---
-pub(crate) type FullClient = sc_service::TFullClient<Block, RuntimeApi, RuntimeExecutor>;
+pub(crate) type FullClient = sc_service::TFullClient<
+	Block,
+	RuntimeApi,
+	sc_executor::WasmExecutor<sp_io::SubstrateHostFunctions>,
+>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
 
@@ -54,9 +50,7 @@ pub fn new_partial(config: &Configuration) -> Result<Service, ServiceError> {
 		})
 		.transpose()?;
 
-	// --- Fix: Use correct WasmExecutor type ---
-	let executor = sc_service::new_wasm_executor::<HostFunctions>(&config.executor);
-
+	let executor = sc_service::new_wasm_executor::<sp_io::SubstrateHostFunctions>(&config.executor);
 	let (client, backend, keystore_container, task_manager) =
 		sc_service::new_full_parts::<Block, RuntimeApi, _>(
 			config,
@@ -91,10 +85,10 @@ pub fn new_partial(config: &Configuration) -> Result<Service, ServiceError> {
 		telemetry.as_ref().map(|x| x.handle()),
 	)?;
 
-let babe_config = client
-    .runtime_api()
-    .configuration(client.info().best_hash)
-    .map_err(|e| ServiceError::Consensus(ConsensusError::Other(Box::new(e) as Box<dyn StdError + Send + Sync>)))?;
+	let babe_config = client
+		.runtime_api()
+		.babe_configuration(client.info().best_hash)
+		.map_err(|e| ServiceError::Consensus(e.into()))?;
 
 	let (babe_block_import, babe_link) = sc_consensus_babe::block_import(
 		babe_config,
@@ -102,10 +96,10 @@ let babe_config = client
 		client.clone(),
 	)?;
 
-	let slot_duration = babe_link.config().slot_duration(); // FIX: get slot_duration from babe_link
+	let slot_duration = slot_duration(&*client)?;
 
 	let (import_queue, _babe_worker_handle) = babe_import_queue(sc_consensus_babe::ImportQueueParams {
-		link: babe_link.clone(), // FIX: pass plain struct, not Arc
+		link: babe_link.clone(),
 		block_import: babe_block_import.clone(),
 		justification_import: Some(Box::new(grandpa_block_import.clone())),
 		client: client.clone(),
@@ -132,7 +126,7 @@ let babe_config = client
 		keystore_container,
 		select_chain,
 		transaction_pool,
-		other: (grandpa_block_import, grandpa_link, telemetry, Arc::new(babe_link)), // FIX: wrap babe_link in Arc
+		other: (grandpa_block_import, grandpa_link, telemetry, babe_link),
 	})
 }
 
@@ -150,7 +144,7 @@ pub fn new_full<
 		keystore_container,
 		select_chain,
 		transaction_pool,
-		other: (block_import, grandpa_link, mut telemetry, babe_link_arc),
+		other: (block_import, grandpa_link, mut telemetry, babe_link),
 	} = new_partial(&config)?;
 
 	let mut net_config = sc_network::config::FullNetworkConfiguration::<
@@ -255,7 +249,7 @@ pub fn new_full<
 			telemetry.as_ref().map(|x| x.handle()),
 		);
 
-		let slot_duration = babe_link_arc.config().slot_duration(); // FIX: get slot_duration from Arc<BabeLink>
+		let slot_duration = slot_duration(&*client)?;
 
 		let babe_config = BabeParams {
 			keystore: keystore_container.keystore(),
@@ -275,7 +269,7 @@ pub fn new_full<
 			},
 			force_authoring,
 			backoff_authoring_blocks,
-			babe_link: (*babe_link_arc).clone(), // FIX: pass plain struct
+			babe_link,
 			block_proposal_slot_portion: SlotProportion::new(2f32 / 3f32),
 			max_block_proposal_slot_portion: None,
 			telemetry: telemetry.as_ref().map(|x| x.handle()),

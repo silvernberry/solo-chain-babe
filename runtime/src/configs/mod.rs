@@ -37,7 +37,7 @@ use frame_support::{
     parameter_types,
     traits::{
         ConstBool, ConstU128, ConstU32, ConstU64, ConstU8,
-        Nothing, VariantCountOf, EqualPrivilegeOnly
+        Nothing, VariantCountOf, EqualPrivilegeOnly, KeyOwnerProofSystem
     },
     weights::{
         constants::{BlockExecutionWeight, RocksDbWeight, WEIGHT_REF_TIME_PER_SECOND},
@@ -61,18 +61,18 @@ use pallet_election_provider_multi_phase::{
 };
 use pallet_nomination_pools::adapter::TransferStake;
 use pallet_bags_list as bags_list;
-
+use pallet_im_online::ed25519::AuthorityId as ImOnlineId ;
 use pallet_session::PeriodicSessions;
 use pallet_transaction_payment::{ConstFeeMultiplier, FungibleAdapter, Multiplier};
 
 // Sp Runtime
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
+use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::H256;
 use sp_runtime::{
     curve::PiecewiseLinear,
     traits::{Convert, One, OpaqueKeys},
     transaction_validity::TransactionPriority,
-    FixedU128, Perbill,
+    FixedU128, Perbill, Vec,
 };
 use sp_staking::{EraIndex, SessionIndex};
 use sp_version::RuntimeVersion;
@@ -88,14 +88,15 @@ use crate::{
     constants::{currency::*, time::*},
     SessionKeys, UncheckedExtrinsic,
 };
-use crate::voter_bags;
+use crate::{voter_bags, Moment};
 
 // Local module imports
 use super::{
-	AccountId, Aura, Balance, NominationPools, Timestamp,  Session, Balances, Staking, TransactionPayment, ElectionProviderMultiPhase, Block, BlockNumber, Hash, Nonce, PalletInfo, Runtime,
+	AccountId, Babe, Balance, Offences, Historical, Utility,ImOnline, NominationPools, Timestamp,  Session, Balances, Staking, TransactionPayment, ElectionProviderMultiPhase, Block, BlockNumber, Hash, Nonce, PalletInfo, Runtime,
 	RuntimeCall, RuntimeEvent, RuntimeFreezeReason, RuntimeHoldReason, RuntimeOrigin, OriginCaller, RuntimeTask,
 	System, EXISTENTIAL_DEPOSIT, SLOT_DURATION, VERSION,
 };
+
 
 const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
 
@@ -152,12 +153,52 @@ impl sp_runtime::traits::Convert<usize, Balance> for SignedDepositBase {
 }
 
 
-impl pallet_aura::Config for Runtime {
-	type AuthorityId = AuraId;
-	type DisabledValidators = ();
-	type MaxAuthorities = ConstU32<32>;
-	type AllowMultipleBlocksPerSlot = ConstBool<false>;
-	type SlotDuration = pallet_aura::MinimumPeriodTimesTwo<Runtime>;
+parameter_types! {
+	// NOTE: Currently it is not possible to change the epoch duration after the chain has started.
+	//       Attempting to do so will brick block production.
+	pub const EpochDuration: u64 = EPOCH_DURATION_IN_SLOTS;
+	pub const ExpectedBlockTime: Moment = MILLISECS_PER_BLOCK;
+	pub const MaxNominators: u32 = 64;
+	pub const MaxAuthorities: u32 = 100;
+	pub const ReportLongevity: u64 =
+		BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
+}
+
+impl pallet_babe::Config for Runtime {
+	type EpochDuration = EpochDuration;
+	type ExpectedBlockTime = ExpectedBlockTime;
+	type EpochChangeTrigger = pallet_babe::ExternalTrigger;
+	type DisabledValidators = Session;
+	type WeightInfo = ();
+	type MaxAuthorities = MaxAuthorities;
+	type MaxNominators = MaxNominators;
+	type KeyOwnerProof = sp_session::MembershipProof;
+	type EquivocationReportSystem =
+		pallet_babe::EquivocationReportSystem<Self, Offences, Historical, ReportLongevity>;
+}
+
+impl pallet_offences::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
+	type OnOffenceHandler = Staking;
+}
+
+parameter_types! {
+	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
+	pub const MaxKeys: u32 = 10_000;
+	pub const MaxPeerInHeartbeats: u32 = 10_000;
+}
+
+impl pallet_im_online::Config for Runtime {
+	type AuthorityId = ImOnlineId;
+	type RuntimeEvent = RuntimeEvent;
+	type NextSessionRotation = Babe;
+	type ValidatorSet = Historical;
+	type ReportUnresponsiveness = Offences;
+	type UnsignedPriority = ImOnlineUnsignedPriority;
+	type WeightInfo = pallet_im_online::weights::SubstrateWeight<Runtime>;
+	type MaxKeys = MaxKeys;
+	type MaxPeerInHeartbeats = MaxPeerInHeartbeats;
 }
 
 impl pallet_grandpa::Config for Runtime {
@@ -175,9 +216,21 @@ impl pallet_grandpa::Config for Runtime {
 impl pallet_timestamp::Config for Runtime {
 	/// A timestamp: milliseconds since the unix epoch.
 	type Moment = u64;
-	type OnTimestampSet = Aura;
+	type OnTimestampSet = Babe;
 	type MinimumPeriod = ConstU64<{ SLOT_DURATION / 2 }>;
 	type WeightInfo = ();
+}
+
+impl pallet_utility::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	type PalletsOrigin = OriginCaller;
+	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+}
+
+impl pallet_authorship::Config for Runtime {
+	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Babe>;
+	type EventHandler = (Staking, ImOnline);
 }
 
 impl pallet_balances::Config for Runtime {
@@ -654,13 +707,36 @@ impl pallet_template::Config for Runtime {
 	type WeightInfo = pallet_template::weights::SubstrateWeight<Runtime>;
 }
 
-impl CreateTransactionBase<pallet_election_provider_multi_phase::Call<Runtime>> for Runtime {
-	type Extrinsic = UncheckedExtrinsic;
-	type RuntimeCall = RuntimeCall;
+impl frame_system::offchain::CreateTransactionBase<pallet_im_online::Call<Runtime>> for Runtime {
+    type Extrinsic = UncheckedExtrinsic;
+    type RuntimeCall = RuntimeCall;
 }
 
-impl CreateInherent<pallet_election_provider_multi_phase::Call<Runtime>> for Runtime {
-	fn create_inherent(call: RuntimeCall) -> UncheckedExtrinsic {
-		UncheckedExtrinsic::new_bare(call)
-	}
+impl frame_system::offchain::CreateTransactionBase<pallet_election_provider_multi_phase::Call<Runtime>> for Runtime {
+    type Extrinsic = UncheckedExtrinsic;
+    type RuntimeCall = RuntimeCall;
+}
+
+impl frame_system::offchain::CreateTransactionBase<pallet_babe::Call<Runtime>> for Runtime {
+    type Extrinsic = UncheckedExtrinsic;
+    type RuntimeCall = RuntimeCall;
+}
+
+impl frame_system::offchain::CreateInherent<pallet_im_online::Call<Runtime>> for Runtime {
+    fn create_inherent(call: RuntimeCall) -> UncheckedExtrinsic {
+        UncheckedExtrinsic::new_bare(call)
+    }
+}
+
+impl frame_system::offchain::CreateInherent<pallet_election_provider_multi_phase::Call<Runtime>> for Runtime {
+    fn create_inherent(call: RuntimeCall) -> UncheckedExtrinsic {
+        UncheckedExtrinsic::new_bare(call)
+    }
+}
+
+
+impl frame_system::offchain::CreateInherent<pallet_babe::Call<Runtime>> for Runtime {
+    fn create_inherent(call: RuntimeCall) -> UncheckedExtrinsic {
+        UncheckedExtrinsic::new_bare(call)
+    }
 }

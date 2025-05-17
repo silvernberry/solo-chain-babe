@@ -27,13 +27,14 @@ pub use frame_system::Call as SystemCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_staking::Call as StakingCall;
+use crate::constants::time::PRIMARY_PROBABILITY;
 
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 
 pub mod genesis_config_presets;
 pub use frame_system;
-pub use pallet_aura;
+pub use pallet_babe;
 pub use pallet_grandpa;
 pub use pallet_balances;
 pub use pallet_timestamp;
@@ -48,9 +49,12 @@ pub use pallet_authorship;
 pub use pallet_template;
 pub use pallet_session;
 pub use pallet_bags_list;
+pub use pallet_offences;
+pub use pallet_im_online;
 pub use pallet_nomination_pools;
 pub use pallet_election_provider_multi_phase;
 pub use pallet_insecure_randomness_collective_flip;
+pub use pallet_utility;
 
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
@@ -78,8 +82,9 @@ pub mod opaque {
 
 impl_opaque_keys! {
 	pub struct SessionKeys {
-		pub aura: Aura,
+		pub babe: Babe,
 		pub grandpa: Grandpa,
+		pub im_online: ImOnline,
 	}
 }
 
@@ -102,6 +107,11 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	system_version: 1,
 };
 
+pub const BABE_GENESIS_EPOCH_CONFIG: sp_consensus_babe::BabeEpochConfiguration =
+	sp_consensus_babe::BabeEpochConfiguration {
+		c: PRIMARY_PROBABILITY,
+		allowed_slots: sp_consensus_babe::AllowedSlots::PrimaryAndSecondaryPlainSlots,
+	};
 
 mod block_times {
 	/// This determines the average expected block time that we are targeting. Blocks will be
@@ -239,7 +249,7 @@ mod runtime {
 	pub type Timestamp = pallet_timestamp;
 
 	#[runtime::pallet_index(2)]
-	pub type Aura = pallet_aura;
+	pub type Babe = pallet_babe;
 
 	#[runtime::pallet_index(3)]
 	pub type Grandpa = pallet_grandpa;
@@ -270,21 +280,34 @@ mod runtime {
 	pub type Staking = pallet_staking;
 
 	#[runtime::pallet_index(12)]
-	pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase;
+	pub type Authorship = pallet_authorship;
 
 	#[runtime::pallet_index(13)]
-	pub type Session = pallet_session;
+	pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase;
 
 	#[runtime::pallet_index(14)]
-	pub type NominationPools = pallet_nomination_pools;
-
-	#[runtime::pallet_index(15)]
-	pub type Historical = pallet_session::historical;
+	pub type Session = pallet_session;
 
 	#[runtime::pallet_index(16)]
-	pub type Contracts = pallet_contracts;
+	pub type NominationPools = pallet_nomination_pools;
 
 	#[runtime::pallet_index(17)]
+	pub type Historical = pallet_session::historical;
+
+	#[runtime::pallet_index(18)]
+	pub type Contracts = pallet_contracts;
+
+	#[runtime::pallet_index(19)]
 	pub type BagList = pallet_bags_list;
+
+	#[runtime::pallet_index(20)]
+	pub type Offences = pallet_offences;
+
+	#[runtime::pallet_index(21)]
+	pub type ImOnline = pallet_im_online;
+
+	#[runtime::pallet_index(22)]
+	pub type Utility = pallet_utility;
+
 }
 

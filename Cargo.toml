@@ -15,8 +15,8 @@ members = [
     "substrate/frame",
     "substrate/frame/democracy",
     "substrate/frame/grandpa",
+    "substrate/frame/babe",
     "substrate/frame/contracts",
-    "substrate/frame/contracts/fixtures",
     "substrate/frame/staking",
 
 ]
@@ -73,6 +73,7 @@ frame-metadata-hash-extension = { version = "0.8.0", default-features = false }
 frame-system = { version = "40.1.0", default-features = false }
 futures = { version = "0.3.31" }
 jsonrpsee = { version = "0.24.3" }
+codec = { version = "3.7.4", default-features = false, package = "parity-scale-codec" }
 pallet-transaction-payment = { version = "40.0.0", default-features = false }
 pallet-transaction-payment-rpc = { version = "43.0.0", default-features = false }
 sc-basic-authorship = { version = "0.49.0", default-features = false }
@@ -131,13 +132,20 @@ log = { version = "0.4.22", default-features = false }
 sp-application-crypto  = { version = "40.1.0", default-features = false }
 sp-consensus-babe = { version = "0.42.1", default-features = false }
 sp-staking = { version = "38.0.0", default-features = false }
+sc-consensus-epochs = { version = "0.48.0", default-features = false }
 frame-election-provider-support = { version = "40.1.0", default-features = false }
 pallet-authorship = { version = "40.0.0", default-features = false }
 pallet-offences = { version = "39.0.0", default-features = false }
+pallet-im-online = { version = "39.1.0", default-features = false }
+sc-consensus-babe = { version = "0.49.0", default-features = false }
+sc-network-common = { version = "0.48.0", default-features = false }
+sp-consensus =  { version = "0.42.0", default-features = false }
+sc-rpc-api = { version = "0.48.0", default-features = false }
+sc-network-sync = { version = "0.48.0", default-features = false }
+sc-storage-monitor = { version = "0.24.0", default-features = false }
 
 # local pallets
-
-pallet-aura = { path = "substrate/frame/aura", default-features = false }
+pallet-babe = { path = "substrate/frame/babe", default-features = false }
 pallet-staking = { path = "substrate/frame/staking", default-features = false }
 pallet-democracy = { path = "substrate/frame/democracy", default-features = false }
 pallet-grandpa = { path = "substrate/frame/grandpa", default-features = false }

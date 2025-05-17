@@ -15,20 +15,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{constants::currency::*, AccountId, Balance, BalancesConfig, SessionConfig, RuntimeGenesisConfig, StakingConfig, SudoConfig};
-use alloc::{vec, vec::Vec};
-use frame_support::build_struct_json_patch;
-use serde_json::Value;
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_consensus_grandpa::AuthorityId as GrandpaId;
-use sp_genesis_builder::{self, PresetId};
-use sp_keyring::Sr25519Keyring;
-use pallet_staking::{StakerStatus, GenesisConfig as StakingGenesisConfig};
-use sp_runtime::Perbill;
-use sp_core::{crypto::get_public_from_string_or_panic, sr25519};
-use array_bytes::hex_n_into_unchecked;
-use crate::SessionKeys;
+//! Genesis Presets for the Kitchensink Runtime
 
+use crate::{
+	constants::currency::*, AccountId,
+	BabeConfig, Balance, BalancesConfig, NominationPoolsConfig, SystemConfig,
+	RuntimeGenesisConfig, SessionConfig, SessionKeys, StakingConfig,
+	SudoConfig, BABE_GENESIS_EPOCH_CONFIG,
+};
+use frame_support::build_struct_json_patch;
+use alloc::{vec, vec::Vec};
+use pallet_im_online::ed25519::AuthorityId as ImOnlineId;
+use sp_consensus_babe::AuthorityId as BabeId;
+use sp_consensus_grandpa::AuthorityId as GrandpaId;
+use sp_core::{crypto::get_public_from_string_or_panic, sr25519};
+use sp_genesis_builder::PresetId;
+use sp_keyring::Sr25519Keyring;
+use sp_runtime::Perbill;
+use pallet_staking::StakerStatus;
 
 pub const ENDOWMENT: Balance = 10_000_000 * DOLLARS;
 pub const STASH: Balance = ENDOWMENT / 1000;
@@ -183,9 +187,10 @@ pub fn authority_keys_from_seed(seed: &str) -> (AccountId, AccountId, SessionKey
 
 pub fn session_keys(
 	grandpa: GrandpaId,
-	aura: AuraId,
+	babe: BabeId,
+	im_online: ImOnlineId,
 ) -> SessionKeys {
-	SessionKeys { grandpa, aura}
+	SessionKeys { grandpa, babe, im_online }
 }
 
 /// We have this method as there is no straight forward way to convert the
@@ -195,7 +200,7 @@ pub fn session_keys(
 pub fn session_keys_from_seed(seed: &str) -> SessionKeys {
 	session_keys(
 		get_public_from_string_or_panic::<GrandpaId>(seed),
-		get_public_from_string_or_panic::<AuraId>(seed),
-
+		get_public_from_string_or_panic::<BabeId>(seed),
+		get_public_from_string_or_panic::<ImOnlineId>(seed),
 	)
 }
