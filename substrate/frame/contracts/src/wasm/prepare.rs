@@ -30,7 +30,7 @@ use crate::{
 };
 #[cfg(any(test, feature = "runtime-benchmarks"))]
 use alloc::vec::Vec;
-use parity_scale_codec::MaxEncodedLen;
+use codec::MaxEncodedLen;
 use sp_runtime::{traits::Hash, DispatchError};
 use wasmi::{
 	core::ValType as WasmiValueType, CompilationMode, Config as WasmiConfig, Engine, ExternType,

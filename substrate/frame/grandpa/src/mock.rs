@@ -20,7 +20,7 @@
 #![cfg(test)]
 
 use crate::{self as pallet_grandpa, AuthorityId, AuthorityList, Config, ConsensusLog};
-use parity_scale_codec::Encode;
+use codec::Encode;
 use finality_grandpa;
 use frame_election_provider_support::{
 	bounds::{ElectionBounds, ElectionBoundsBuilder},

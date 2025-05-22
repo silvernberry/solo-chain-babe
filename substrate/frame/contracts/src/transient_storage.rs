@@ -23,7 +23,7 @@ use crate::{
 	Config, Error,
 };
 use alloc::{collections::BTreeMap, vec::Vec};
-use parity_scale_codec::Encode;
+use codec::Encode;
 use core::{marker::PhantomData, mem};
 use frame_support::DefaultNoBound;
 use sp_runtime::{DispatchError, DispatchResult, Saturating};

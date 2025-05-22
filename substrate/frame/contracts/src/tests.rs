@@ -40,7 +40,7 @@ use crate::{
 	MigrationInProgress, Origin, Pallet, PristineCode, Schedule,
 };
 use assert_matches::assert_matches;
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use frame_support::{
 	assert_err, assert_err_ignore_postinfo, assert_err_with_weight, assert_noop, assert_ok,
 	derive_impl,
@@ -102,7 +102,7 @@ pub mod test_utils {
 		exec::AccountIdOf, BalanceOf, CodeHash, CodeInfo, CodeInfoOf, Config, ContractInfo,
 		ContractInfoOf, Nonce, PristineCode,
 	};
-	use parity_scale_codec::{Encode, MaxEncodedLen};
+	use codec::{Encode, MaxEncodedLen};
 	use frame_support::traits::fungible::{InspectHold, Mutate};
 
 	pub fn place_contract(address: &AccountIdOf<Test>, code_hash: CodeHash<Test>) {
@@ -1157,7 +1157,7 @@ fn delegate_call() {
 		assert_ok!(Contracts::upload_code(
 			RuntimeOrigin::signed(ALICE),
 			callee_wasm,
-			Some(parity_scale_codec::Compact(100_000)),
+			Some(codec::Compact(100_000)),
 			Determinism::Enforced,
 		));
 
@@ -2552,7 +2552,7 @@ fn upload_code_works() {
 		assert_ok!(Contracts::upload_code(
 			RuntimeOrigin::signed(ALICE),
 			wasm,
-			Some(parity_scale_codec::Compact(1_000)),
+			Some(codec::Compact(1_000)),
 			Determinism::Enforced,
 		));
 		// Ensure the contract was stored and get expected deposit amount to be reserved.
@@ -2589,7 +2589,7 @@ fn upload_code_limit_too_low() {
 			Contracts::upload_code(
 				RuntimeOrigin::signed(ALICE),
 				wasm,
-				Some(parity_scale_codec::Compact(deposit_insufficient)),
+				Some(codec::Compact(deposit_insufficient)),
 				Determinism::Enforced
 			),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -2615,7 +2615,7 @@ fn upload_code_not_enough_balance() {
 			Contracts::upload_code(
 				RuntimeOrigin::signed(ALICE),
 				wasm,
-				Some(parity_scale_codec::Compact(1_000)),
+				Some(codec::Compact(1_000)),
 				Determinism::Enforced
 			),
 			<Error<Test>>::StorageDepositNotEnoughFunds,
@@ -2638,7 +2638,7 @@ fn remove_code_works() {
 		assert_ok!(Contracts::upload_code(
 			RuntimeOrigin::signed(ALICE),
 			wasm,
-			Some(parity_scale_codec::Compact(1_000)),
+			Some(codec::Compact(1_000)),
 			Determinism::Enforced,
 		));
 		// Ensure the contract was stored and get expected deposit amount to be reserved.
@@ -2684,7 +2684,7 @@ fn remove_code_wrong_origin() {
 		assert_ok!(Contracts::upload_code(
 			RuntimeOrigin::signed(ALICE),
 			wasm,
-			Some(parity_scale_codec::Compact(1_000)),
+			Some(codec::Compact(1_000)),
 			Determinism::Enforced,
 		));
 		// Ensure the contract was stored and get expected deposit amount to be reserved.
@@ -3339,7 +3339,7 @@ fn storage_deposit_limit_is_enforced() {
 		// 2 for the item added + 1 for the new storage item.
 		assert_err_ignore_postinfo!(
 			builder::call(addr.clone())
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(2)))
+				.storage_deposit_limit(Some(codec::Compact(2)))
 				.data(1u32.to_le_bytes().to_vec())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3380,7 +3380,7 @@ fn deposit_limit_in_nested_calls() {
 		// Create 100 bytes of storage with a price of per byte
 		// This is 100 Balance + 2 Balance for the item
 		assert_ok!(builder::call(addr_callee.clone())
-			.storage_deposit_limit(Some(parity_scale_codec::Compact(102)))
+			.storage_deposit_limit(Some(codec::Compact(102)))
 			.data(100u32.to_le_bytes().to_vec())
 			.build());
 
@@ -3391,7 +3391,7 @@ fn deposit_limit_in_nested_calls() {
 		// 14.
 		assert_err_ignore_postinfo!(
 			builder::call(addr_caller.clone())
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(13)))
+				.storage_deposit_limit(Some(codec::Compact(13)))
 				.data((100u32, &addr_callee, 0u64).encode())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3404,7 +3404,7 @@ fn deposit_limit_in_nested_calls() {
 		// < 15.
 		assert_err_ignore_postinfo!(
 			builder::call(addr_caller.clone())
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(14)))
+				.storage_deposit_limit(Some(codec::Compact(14)))
 				.data((101u32, &addr_callee, 0u64).encode())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3417,7 +3417,7 @@ fn deposit_limit_in_nested_calls() {
 		// back, which is covered by the next test case.
 		assert_err_ignore_postinfo!(
 			builder::call(addr_caller.clone())
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(16)))
+				.storage_deposit_limit(Some(codec::Compact(16)))
 				.data((102u32, &addr_callee, 1u64).encode())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3428,7 +3428,7 @@ fn deposit_limit_in_nested_calls() {
 		// the test case fail. We don't set a special limit for the nested call here.
 		assert_err_ignore_postinfo!(
 			builder::call(addr_caller.clone())
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(0)))
+				.storage_deposit_limit(Some(codec::Compact(0)))
 				.data((87u32, &addr_callee, 0u64).encode())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3449,7 +3449,7 @@ fn deposit_limit_in_nested_calls() {
 		// We set the special deposit limit of 1 Balance for the nested call, which isn't
 		// enforced as callee frees up storage. This should pass.
 		assert_ok!(builder::call(addr_caller.clone())
-			.storage_deposit_limit(Some(parity_scale_codec::Compact(1)))
+			.storage_deposit_limit(Some(codec::Compact(1)))
 			.data((87u32, &addr_callee, 1u64).encode())
 			.build());
 	});
@@ -3489,7 +3489,7 @@ fn deposit_limit_in_nested_instantiate() {
 		assert_err_ignore_postinfo!(
 			builder::call(addr_caller.clone())
 				.origin(RuntimeOrigin::signed(BOB))
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(callee_info_len + 2 + ED + 1)))
+				.storage_deposit_limit(Some(codec::Compact(callee_info_len + 2 + ED + 1)))
 				.data((0u32, &code_hash_callee, 0u64).encode())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3503,7 +3503,7 @@ fn deposit_limit_in_nested_instantiate() {
 		assert_err_ignore_postinfo!(
 			builder::call(addr_caller.clone())
 				.origin(RuntimeOrigin::signed(BOB))
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(callee_info_len + 2 + ED + 2)))
+				.storage_deposit_limit(Some(codec::Compact(callee_info_len + 2 + ED + 2)))
 				.data((1u32, &code_hash_callee, 0u64).encode())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3517,7 +3517,7 @@ fn deposit_limit_in_nested_instantiate() {
 		assert_err_ignore_postinfo!(
 			builder::call(addr_caller.clone())
 				.origin(RuntimeOrigin::signed(BOB))
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(callee_info_len + 2 + ED + 2)))
+				.storage_deposit_limit(Some(codec::Compact(callee_info_len + 2 + ED + 2)))
 				.data((0u32, &code_hash_callee, callee_info_len + 2 + ED + 1).encode())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3532,7 +3532,7 @@ fn deposit_limit_in_nested_instantiate() {
 		assert_err_ignore_postinfo!(
 			builder::call(addr_caller.clone())
 				.origin(RuntimeOrigin::signed(BOB))
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(callee_info_len + 2 + ED + 3))) // enough parent limit
+				.storage_deposit_limit(Some(codec::Compact(callee_info_len + 2 + ED + 3))) // enough parent limit
 				.data((1u32, &code_hash_callee, callee_info_len + 2 + ED + 2).encode())
 				.build(),
 			<Error<Test>>::StorageDepositLimitExhausted,
@@ -3543,7 +3543,7 @@ fn deposit_limit_in_nested_instantiate() {
 		// Set enough deposit limit for the child instantiate. This should succeed.
 		let result = builder::bare_call(addr_caller.clone())
 			.origin(BOB)
-			.storage_deposit_limit(Some(parity_scale_codec::Compact(callee_info_len + 2 + ED + 4).into()))
+			.storage_deposit_limit(Some(codec::Compact(callee_info_len + 2 + ED + 4).into()))
 			.data((1u32, &code_hash_callee, callee_info_len + 2 + ED + 3).encode())
 			.build();
 
@@ -3596,7 +3596,7 @@ fn deposit_limit_honors_liquidity_restrictions() {
 		assert_err_ignore_postinfo!(
 			builder::call(addr.clone())
 				.origin(RuntimeOrigin::signed(BOB))
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(200)))
+				.storage_deposit_limit(Some(codec::Compact(200)))
 				.data(100u32.to_le_bytes().to_vec())
 				.build(),
 			<Error<Test>>::StorageDepositNotEnoughFunds,
@@ -3626,7 +3626,7 @@ fn deposit_limit_honors_existential_deposit() {
 		assert_err_ignore_postinfo!(
 			builder::call(addr.clone())
 				.origin(RuntimeOrigin::signed(BOB))
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(900)))
+				.storage_deposit_limit(Some(codec::Compact(900)))
 				.data(100u32.to_le_bytes().to_vec())
 				.build(),
 			<Error<Test>>::StorageDepositNotEnoughFunds,
@@ -3658,7 +3658,7 @@ fn deposit_limit_honors_min_leftover() {
 			builder::call(addr.clone())
 				.origin(RuntimeOrigin::signed(BOB))
 				.value(400)
-				.storage_deposit_limit(Some(parity_scale_codec::Compact(500)))
+				.storage_deposit_limit(Some(codec::Compact(500)))
 				.data(100u32.to_le_bytes().to_vec())
 				.build(),
 			<Error<Test>>::StorageDepositNotEnoughFunds,

@@ -20,7 +20,7 @@
 
 use crate::{weights::WeightInfo, Config};
 
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use core::marker::PhantomData;
 use frame_support::DefaultNoBound;
 use scale_info::TypeInfo;

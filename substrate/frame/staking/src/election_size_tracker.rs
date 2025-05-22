@@ -22,7 +22,7 @@
 //! The goal of the size tracker is to provide a static, no-allocation byte tracker to be
 //! used by the election data provider when preparing the results of
 //! [`ElectionDataProvider::electing_voters`]. The [`StaticTracker`] implementation uses
-//! [`parity_scale_codec::Encode::size_hint`] to estimate the SCALE encoded size of the snapshot voters struct
+//! [`codec::Encode::size_hint`] to estimate the SCALE encoded size of the snapshot voters struct
 //! as it is being constructed without requiring extra stack allocations.
 //!
 //! The [`StaticTracker::try_register_voter`] is called to update the static tracker internal
@@ -70,7 +70,7 @@
 //! - 1 * [`Encode::size_hint`] of the `VoteWeight` type;
 //! - `num_votes` * [`Encode::size_hint`] of the `AccountId` type.
 
-use parity_scale_codec::Encode;
+use codec::Encode;
 use frame_election_provider_support::{
 	bounds::{DataProviderBounds, SizeBound},
 	ElectionDataProvider, VoterOf,
@@ -158,7 +158,7 @@ where
 	/// Size of the SCALE encoded prefix with a given length.
 	#[inline]
 	fn length_prefix(len: usize) -> usize {
-		use parity_scale_codec::{Compact, CompactLen};
+		use codec::{Compact, CompactLen};
 		Compact::<u32>::compact_len(&(len as u32))
 	}
 

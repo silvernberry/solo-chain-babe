@@ -21,7 +21,7 @@ use crate::{
 	primitives::{AccountId, CENTS},
 	relay_chain, MockNet, ParaA, ParachainBalances, Relay, ALICE, BOB, INITIAL_BALANCE,
 };
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use frame_support::traits::{fungibles::Mutate, Currency};
 use pallet_contracts::{test_utils::builder::*, Code};
 use pallet_contracts_fixtures::compile_module;

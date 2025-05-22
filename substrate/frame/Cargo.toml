@@ -18,7 +18,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 # external deps
-parity-scale-codec = { features = ["derive"], workspace = true }
+codec = { features = ["derive"], workspace = true }
 frame-benchmarking = { optional = true, workspace = true }
 frame-executive = { optional = true, workspace = true }
 frame-support.workspace = true
@@ -71,7 +71,7 @@ runtime = [
 	"sp-version",
 ]
 std = [
-	"parity-scale-codec/std",
+	"codec/std",
 	"frame-benchmarking?/std",
 	"frame-executive?/std",
 	"frame-support/std",

@@ -17,7 +17,7 @@
 
 use crate::{BoundedAuthorityList, Pallet};
 use alloc::vec::Vec;
-use parity_scale_codec::Decode;
+use codec::Decode;
 use core::marker::PhantomData;
 use frame_support::{
 	migrations::VersionedMigration,
@@ -42,7 +42,7 @@ pub struct UncheckedMigrateImpl<T>(PhantomData<T>);
 impl<T: crate::Config> UncheckedOnRuntimeUpgrade for UncheckedMigrateImpl<T> {
 	#[cfg(feature = "try-runtime")]
 	fn pre_upgrade() -> Result<Vec<u8>, sp_runtime::TryRuntimeError> {
-		use parity_scale_codec::Encode;
+		use codec::Encode;
 
 		let authority_list_len = load_authority_list().len() as u32;
 

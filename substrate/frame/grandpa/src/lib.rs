@@ -36,7 +36,7 @@ pub use sp_consensus_grandpa::{
 };
 
 use alloc::{boxed::Box, vec::Vec};
-use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
+use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
 	dispatch::{DispatchResultWithPostInfo, Pays},
 	pallet_prelude::Get,

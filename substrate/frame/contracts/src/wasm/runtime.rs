@@ -25,7 +25,7 @@ use crate::{
 	BalanceOf, CodeHash, Config, DebugBufferVec, Error, SENTINEL,
 };
 use alloc::{boxed::Box, vec, vec::Vec};
-use parity_scale_codec::{Decode, DecodeLimit, Encode, MaxEncodedLen};
+use codec::{Decode, DecodeLimit, Encode, MaxEncodedLen};
 use core::fmt;
 use frame_support::{
 	dispatch::DispatchInfo, ensure, pallet_prelude::DispatchResultWithPostInfo, parameter_types,
@@ -1367,7 +1367,7 @@ pub mod env {
 	/// # Note
 	///
 	/// The values `_callee_len` and `_value_len` are ignored because the encoded sizes of those
-	/// types are fixed through [`parity_scale_codec::MaxEncodedLen`]. The fields exist for backwards
+	/// types are fixed through [`codec::MaxEncodedLen`]. The fields exist for backwards
 	/// compatibility. Consider switching to the newest version of this function.
 	#[prefixed_alias]
 	fn call(
@@ -1494,7 +1494,7 @@ pub mod env {
 	/// # Note
 	///
 	/// The values `_code_hash_len` and `_value_len` are ignored because the encoded sizes
-	/// of those types are fixed through [`parity_scale_codec::MaxEncodedLen`]. The fields exist
+	/// of those types are fixed through [`codec::MaxEncodedLen`]. The fields exist
 	/// for backwards compatibility. Consider switching to the newest version of this function.
 	#[prefixed_alias]
 	#[mutating]

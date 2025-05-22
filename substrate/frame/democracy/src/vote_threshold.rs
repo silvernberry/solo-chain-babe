@@ -18,7 +18,7 @@
 //! Voting thresholds.
 
 use crate::Tally;
-use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use core::ops::{Add, Div, Mul, Rem};
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]

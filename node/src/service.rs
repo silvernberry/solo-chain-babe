@@ -4,13 +4,13 @@ use futures::FutureExt;
 use std::error::Error as StdError;
 use sp_consensus::Error as ConsensusError;
 use sc_client_api::{Backend, BlockBackend, HeaderBackend}; // Removed ExecutorProvider, added HeaderBackend
-use sc_consensus_babe::{self, BabeLink, SlotProportion, BabeParams, import_queue as babe_import_queue};
+use sc_consensus_babe::{self, BabeLink, SlotProportion, BabeParams};
 use sc_consensus_grandpa::SharedVoterState;
 use sc_service::{error::Error as ServiceError, Configuration, TaskManager, WarpSyncConfig};
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use solo_substrate_runtime::{self, apis::RuntimeApi, opaque::Block};
-use sp_consensus_babe::{self as sp_consensus_babe, inherents::InherentDataProvider, SlotDuration}; // Use SlotDuration
+use sp_consensus_babe::{self as sp_consensus_babe, inherents::InherentDataProvider}; // Removed SlotDuration
 use std::{sync::Arc, time::Duration};
 use sp_api::ProvideRuntimeApi; // Added for .runtime_api()
 use sp_consensus_babe::BabeApi;
@@ -29,17 +29,19 @@ type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
 const GRANDPA_JUSTIFICATION_PERIOD: u32 = 512;
 
 pub type Service = sc_service::PartialComponents<
-	FullClient,
-	FullBackend,
-	FullSelectChain,
-	sc_consensus::DefaultImportQueue<Block>,
-	sc_transaction_pool::TransactionPoolHandle<Block, FullClient>,
-	(
-		sc_consensus_grandpa::GrandpaBlockImport<FullBackend, Block, FullClient, FullSelectChain>,
-		sc_consensus_grandpa::LinkHalf<Block, FullClient, FullSelectChain>,
-		Option<Telemetry>,
-		Arc<BabeLink<Block>>,
-	),
+    FullClient,
+    FullBackend,
+    FullSelectChain,
+    sc_consensus::DefaultImportQueue<Block>,
+    sc_transaction_pool::TransactionPoolHandle<Block, FullClient>,
+    (
+        sc_consensus_grandpa::GrandpaBlockImport<FullBackend, Block, FullClient, FullSelectChain>,
+        sc_consensus_babe::BabeBlockImport<Block, FullClient, sc_consensus_grandpa::GrandpaBlockImport<FullBackend, Block, FullClient, FullSelectChain>>,
+        sc_consensus_grandpa::LinkHalf<Block, FullClient, FullSelectChain>,
+        Option<Telemetry>,
+        BabeLink<Block>,
+        sc_consensus_babe::BabeWorkerHandle<Block>,
+    ),
 >;
 
 pub fn new_partial(config: &Configuration) -> Result<Service, ServiceError> {
@@ -91,21 +93,20 @@ pub fn new_partial(config: &Configuration) -> Result<Service, ServiceError> {
 		telemetry.as_ref().map(|x| x.handle()),
 	)?;
 
-let babe_config = client
-    .runtime_api()
-    .configuration(client.info().best_hash)
-    .map_err(|e| ServiceError::Consensus(ConsensusError::Other(Box::new(e) as Box<dyn StdError + Send + Sync>)))?;
+	let babe_config = sc_consensus_babe::configuration(&*client)
+    .map_err(|err| ServiceError::Consensus(ConsensusError::Other(Box::new(err) as Box<_>)))?;
 
 	let (babe_block_import, babe_link) = sc_consensus_babe::block_import(
 		babe_config,
 		grandpa_block_import.clone(),
 		client.clone(),
 	)?;
+		
 
 	let slot_duration = babe_link.config().slot_duration(); // FIX: get slot_duration from babe_link
 
-	let (import_queue, _babe_worker_handle) = babe_import_queue(sc_consensus_babe::ImportQueueParams {
-		link: babe_link.clone(), // FIX: pass plain struct, not Arc
+	let (import_queue, babe_worker_handle) = sc_consensus_babe::import_queue(sc_consensus_babe::ImportQueueParams {
+		link: babe_link.clone(),
 		block_import: babe_block_import.clone(),
 		justification_import: Some(Box::new(grandpa_block_import.clone())),
 		client: client.clone(),
@@ -123,7 +124,7 @@ let babe_config = client
 		telemetry: telemetry.as_ref().map(|x| x.handle()),
 		offchain_tx_pool_factory: OffchainTransactionPoolFactory::new(transaction_pool.clone()),
 	})?;
-
+	
 	Ok(sc_service::PartialComponents {
 		client,
 		backend,
@@ -132,7 +133,14 @@ let babe_config = client
 		keystore_container,
 		select_chain,
 		transaction_pool,
-		other: (grandpa_block_import, grandpa_link, telemetry, Arc::new(babe_link)), // FIX: wrap babe_link in Arc
+		other: (
+			grandpa_block_import,
+			babe_block_import,
+			grandpa_link,
+			telemetry,
+			babe_link,
+			babe_worker_handle,
+		),
 	})
 }
 
@@ -143,14 +151,14 @@ pub fn new_full<
 	config: Configuration,
 ) -> Result<TaskManager, ServiceError> {
 	let sc_service::PartialComponents {
-		client,
-		backend,
-		mut task_manager,
-		import_queue,
-		keystore_container,
-		select_chain,
-		transaction_pool,
-		other: (block_import, grandpa_link, mut telemetry, babe_link_arc),
+			client,
+			backend,
+			mut task_manager,
+			import_queue,
+			keystore_container,
+			select_chain,
+			transaction_pool,
+			other: (grandpa_block_import, babe_block_import, grandpa_link, mut telemetry, babe_link, babe_worker_handle),
 	} = new_partial(&config)?;
 
 	let mut net_config = sc_network::config::FullNetworkConfiguration::<
@@ -224,9 +232,20 @@ pub fn new_full<
 	let rpc_extensions_builder = {
 		let client = client.clone();
 		let pool = transaction_pool.clone();
+		let select_chain = select_chain.clone();
+		let babe_worker_handle = babe_worker_handle.clone();
+		let keystore = keystore_container.keystore();
 
 		Box::new(move |_| {
-			let deps = crate::rpc::FullDeps { client: client.clone(), pool: pool.clone() };
+			let deps = crate::rpc::FullDeps { 
+				client: client.clone(), 
+				pool: pool.clone(),
+				select_chain: select_chain.clone(),
+				babe: crate::rpc::BabeDeps {
+					worker_handle: babe_worker_handle.clone(),
+					keystore: keystore.clone(),
+				},
+			};
 			crate::rpc::create_full(deps).map_err(Into::into)
 		})
 	};
@@ -255,14 +274,14 @@ pub fn new_full<
 			telemetry.as_ref().map(|x| x.handle()),
 		);
 
-		let slot_duration = babe_link_arc.config().slot_duration(); // FIX: get slot_duration from Arc<BabeLink>
+		let slot_duration = babe_link.config().slot_duration();
 
 		let babe_config = BabeParams {
 			keystore: keystore_container.keystore(),
 			client: client.clone(),
 			select_chain: select_chain.clone(),
 			env: proposer_factory,
-			block_import,
+			block_import: babe_block_import, // <-- Use as returned from new_partial
 			sync_oracle: sync_service.clone(),
 			justification_sync_link: sync_service.clone(),
 			create_inherent_data_providers: move |_, ()| async move {
@@ -275,7 +294,7 @@ pub fn new_full<
 			},
 			force_authoring,
 			backoff_authoring_blocks,
-			babe_link: (*babe_link_arc).clone(), // FIX: pass plain struct
+			babe_link: babe_link.clone(),
 			block_proposal_slot_portion: SlotProportion::new(2f32 / 3f32),
 			max_block_proposal_slot_portion: None,
 			telemetry: telemetry.as_ref().map(|x| x.handle()),
@@ -283,8 +302,6 @@ pub fn new_full<
 
 		let babe = sc_consensus_babe::start_babe(babe_config)?;
 
-		// the BABE authoring task is considered essential, i.e. if it
-		// fails we take down the service with it.
 		task_manager
 			.spawn_essential_handle()
 			.spawn_blocking("babe", Some("block-authoring"), babe);

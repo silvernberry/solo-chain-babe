@@ -3,9 +3,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-
 pub mod apis;
-
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarks;
 
@@ -252,61 +250,61 @@ mod runtime {
 	pub type Babe = pallet_babe;
 
 	#[runtime::pallet_index(3)]
-	pub type Grandpa = pallet_grandpa;
+	pub type Session = pallet_session;
 
 	#[runtime::pallet_index(4)]
-	pub type Balances = pallet_balances;
+	pub type Grandpa = pallet_grandpa;
 
 	#[runtime::pallet_index(5)]
-	pub type TransactionPayment = pallet_transaction_payment;
+	pub type Balances = pallet_balances;
 
 	#[runtime::pallet_index(6)]
+	pub type TransactionPayment = pallet_transaction_payment;
+
+	#[runtime::pallet_index(7)]
 	pub type Sudo = pallet_sudo;
 
 	// Include the custom logic from the pallet-template in the runtime.
-	#[runtime::pallet_index(7)]
+	#[runtime::pallet_index(8)]
 	pub type Template = pallet_template;
 
-	#[runtime::pallet_index(8)]
+	#[runtime::pallet_index(9)]
 	pub type Democracy = pallet_democracy;
 
-	#[runtime::pallet_index(9)]
+	#[runtime::pallet_index(10)]
 	pub type Preimage = pallet_preimage;
 
-	#[runtime::pallet_index(10)]
+	#[runtime::pallet_index(11)]
 	pub type Scheduler = pallet_scheduler;
 
-	#[runtime::pallet_index(11)]
+	#[runtime::pallet_index(12)]
 	pub type Staking = pallet_staking;
 
-	#[runtime::pallet_index(12)]
+	#[runtime::pallet_index(13)]
 	pub type Authorship = pallet_authorship;
 
-	#[runtime::pallet_index(13)]
+	#[runtime::pallet_index(14)]
 	pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase;
 
-	#[runtime::pallet_index(14)]
-	pub type Session = pallet_session;
-
-	#[runtime::pallet_index(16)]
+	#[runtime::pallet_index(15)]
 	pub type NominationPools = pallet_nomination_pools;
 
-	#[runtime::pallet_index(17)]
+	#[runtime::pallet_index(16)]
 	pub type Historical = pallet_session::historical;
 
-	#[runtime::pallet_index(18)]
+	#[runtime::pallet_index(17)]
 	pub type Contracts = pallet_contracts;
 
-	#[runtime::pallet_index(19)]
+	#[runtime::pallet_index(18)]
 	pub type BagList = pallet_bags_list;
 
-	#[runtime::pallet_index(20)]
+	#[runtime::pallet_index(19)]
 	pub type Offences = pallet_offences;
 
-	#[runtime::pallet_index(21)]
+	#[runtime::pallet_index(20)]
 	pub type ImOnline = pallet_im_online;
 
-	#[runtime::pallet_index(22)]
+	#[runtime::pallet_index(21)]
 	pub type Utility = pallet_utility;
 
 }

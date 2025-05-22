@@ -155,7 +155,7 @@
 extern crate alloc;
 
 use alloc::{vec, vec::Vec};
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use frame_support::{
 	ensure,
 	traits::{
@@ -1744,7 +1744,7 @@ fn decode_compact_u32_at(key: &[u8]) -> Option<u32> {
 	let bytes = sp_io::storage::read(key, &mut buf, 0)?;
 	// The value may be smaller than 5 bytes.
 	let mut input = &buf[0..buf.len().min(bytes as usize)];
-	match parity_scale_codec::Compact::<u32>::decode(&mut input) {
+	match codec::Compact::<u32>::decode(&mut input) {
 		Ok(c) => Some(c.0),
 		Err(_) => {
 			sp_runtime::print("Failed to decode compact u32 at:");

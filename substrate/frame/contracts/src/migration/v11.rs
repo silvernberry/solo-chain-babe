@@ -24,7 +24,7 @@ use crate::{
 	Config, Pallet, TrieId, Weight, LOG_TARGET,
 };
 use alloc::vec::Vec;
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use core::marker::PhantomData;
 use frame_support::{pallet_prelude::*, storage_alias, weights::WeightMeter, DefaultNoBound};
 #[cfg(feature = "try-runtime")]

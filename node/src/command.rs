@@ -4,11 +4,20 @@ use crate::{
 	cli::{Cli, Subcommand},
 	service,
 };
+use solo_substrate_runtime::RuntimeGenesisConfig;
+// for printing the raw bytes as hex
+use hex::encode as hex_encode;
 use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
 use sc_cli::SubstrateCli;
-use sc_service::PartialComponents;
+use sc_service::{PartialComponents, Configuration as ServiceConfig};
 use solo_substrate_runtime::{Block, EXISTENTIAL_DEPOSIT};
 use sp_keyring::Sr25519Keyring;
+use sp_core::hexdisplay::HexDisplay; // helper for pretty hex
+
+// bring in your runtime and the SessionKeys API
+use solo_substrate_runtime as runtime;
+use sp_session::SessionKeys as SessionKeysTrait;
+ 
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
@@ -39,6 +48,7 @@ impl SubstrateCli for Cli {
 		Ok(match id {
 			"dev" => Box::new(chain_spec::development_chain_spec()?),
 			"" | "local" => Box::new(chain_spec::local_chain_spec()?),
+			"staging" => Box::new(chain_spec::staging_network_config()),
 			path =>
 				Box::new(chain_spec::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
 		})

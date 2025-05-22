@@ -16,7 +16,7 @@
 
 //! Parachain runtime mock.
 
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 
 use frame_support::weights::Weight;
 use polkadot_parachain_primitives::primitives::{

@@ -21,7 +21,7 @@ use super::*;
 use crate::{asset, ConfigOp, Pallet as Staking};
 use testing_utils::*;
 
-use parity_scale_codec::Decode;
+use codec::Decode;
 use frame_election_provider_support::{bounds::DataProviderBounds, SortedListProvider};
 use frame_support::{
 	pallet_prelude::*,

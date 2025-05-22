@@ -18,7 +18,7 @@
 //! Staking FRAME Pallet.
 
 use alloc::vec::Vec;
-use parity_scale_codec::Codec;
+use codec::Codec;
 use frame_election_provider_support::{
 	ElectionProvider, ElectionProviderBase, SortedListProvider, VoteWeight,
 };
@@ -66,7 +66,7 @@ pub(crate) const SPECULATIVE_NUM_SPANS: u32 = 32;
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use parity_scale_codec::HasCompact;
+	use codec::HasCompact;
 	use frame_election_provider_support::ElectionDataProvider;
 
 	use crate::{BenchmarkingConfig, PagedExposureMetadata};
@@ -115,7 +115,7 @@ pub mod pallet {
 		/// Just the `Currency::Balance` type; we have this item to allow us to constrain it to
 		/// `From<u64>`.
 		type CurrencyBalance: sp_runtime::traits::AtLeast32BitUnsigned
-			+ parity_scale_codec::FullCodec
+			+ codec::FullCodec
 			+ DecodeWithMemTracking
 			+ HasCompact<Type: DecodeWithMemTracking>
 			+ Copy
@@ -1024,7 +1024,7 @@ pub mod pallet {
 		/// Get the preferences of a given validator.
 		pub fn validators<EncodeLikeAccountId>(account_id: EncodeLikeAccountId) -> ValidatorPrefs
 		where
-			EncodeLikeAccountId: parity_scale_codec::EncodeLike<T::AccountId>,
+			EncodeLikeAccountId: codec::EncodeLike<T::AccountId>,
 		{
 			Validators::<T>::get(account_id)
 		}
@@ -1034,7 +1034,7 @@ pub mod pallet {
 			account_id: EncodeLikeAccountId,
 		) -> Option<Nominations<T>>
 		where
-			EncodeLikeAccountId: parity_scale_codec::EncodeLike<T::AccountId>,
+			EncodeLikeAccountId: codec::EncodeLike<T::AccountId>,
 		{
 			Nominators::<T>::get(account_id)
 		}
@@ -1055,7 +1055,7 @@ pub mod pallet {
 			era_index: EncodeLikeEraIndex,
 		) -> Option<SessionIndex>
 		where
-			EncodeLikeEraIndex: parity_scale_codec::EncodeLike<EraIndex>,
+			EncodeLikeEraIndex: codec::EncodeLike<EraIndex>,
 		{
 			ErasStartSessionIndex::<T>::get(era_index)
 		}
@@ -1066,8 +1066,8 @@ pub mod pallet {
 			account_id: EncodeLikeAccountId,
 		) -> Exposure<T::AccountId, BalanceOf<T>>
 		where
-			EncodeLikeEraIndex: parity_scale_codec::EncodeLike<EraIndex>,
-			EncodeLikeAccountId: parity_scale_codec::EncodeLike<T::AccountId>,
+			EncodeLikeEraIndex: codec::EncodeLike<EraIndex>,
+			EncodeLikeAccountId: codec::EncodeLike<T::AccountId>,
 		{
 			ErasStakersClipped::<T>::get(era_index, account_id)
 		}
@@ -1078,8 +1078,8 @@ pub mod pallet {
 			account_id: EncodeLikeAccountId,
 		) -> Vec<Page>
 		where
-			EncodeLikeEraIndex: parity_scale_codec::EncodeLike<EraIndex>,
-			EncodeLikeAccountId: parity_scale_codec::EncodeLike<T::AccountId>,
+			EncodeLikeEraIndex: codec::EncodeLike<EraIndex>,
+			EncodeLikeAccountId: codec::EncodeLike<T::AccountId>,
 		{
 			ClaimedRewards::<T>::get(era_index, account_id)
 		}
@@ -1090,8 +1090,8 @@ pub mod pallet {
 			account_id: EncodeLikeAccountId,
 		) -> ValidatorPrefs
 		where
-			EncodeLikeEraIndex: parity_scale_codec::EncodeLike<EraIndex>,
-			EncodeLikeAccountId: parity_scale_codec::EncodeLike<T::AccountId>,
+			EncodeLikeEraIndex: codec::EncodeLike<EraIndex>,
+			EncodeLikeAccountId: codec::EncodeLike<T::AccountId>,
 		{
 			ErasValidatorPrefs::<T>::get(era_index, account_id)
 		}
@@ -1101,7 +1101,7 @@ pub mod pallet {
 			era_index: EncodeLikeEraIndex,
 		) -> Option<BalanceOf<T>>
 		where
-			EncodeLikeEraIndex: parity_scale_codec::EncodeLike<EraIndex>,
+			EncodeLikeEraIndex: codec::EncodeLike<EraIndex>,
 		{
 			ErasValidatorReward::<T>::get(era_index)
 		}
@@ -1111,7 +1111,7 @@ pub mod pallet {
 			era_index: EncodeLikeEraIndex,
 		) -> EraRewardPoints<T::AccountId>
 		where
-			EncodeLikeEraIndex: parity_scale_codec::EncodeLike<EraIndex>,
+			EncodeLikeEraIndex: codec::EncodeLike<EraIndex>,
 		{
 			ErasRewardPoints::<T>::get(era_index)
 		}
@@ -1119,7 +1119,7 @@ pub mod pallet {
 		/// Get the total amount staked for the last [`Config::HistoryDepth`] eras.
 		pub fn eras_total_stake<EncodeLikeEraIndex>(era_index: EncodeLikeEraIndex) -> BalanceOf<T>
 		where
-			EncodeLikeEraIndex: parity_scale_codec::EncodeLike<EraIndex>,
+			EncodeLikeEraIndex: codec::EncodeLike<EraIndex>,
 		{
 			ErasTotalStake::<T>::get(era_index)
 		}
@@ -1144,7 +1144,7 @@ pub mod pallet {
 			account_id: EncodeLikeAccountId,
 		) -> Option<slashing::SlashingSpans>
 		where
-			EncodeLikeAccountId: parity_scale_codec::EncodeLike<T::AccountId>,
+			EncodeLikeAccountId: codec::EncodeLike<T::AccountId>,
 		{
 			SlashingSpans::<T>::get(account_id)
 		}

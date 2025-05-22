@@ -26,7 +26,7 @@ use crate::{
 	Error, TrieId, SENTINEL,
 };
 use alloc::vec::Vec;
-use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
+use codec::{Decode, Encode, MaxEncodedLen};
 use core::marker::PhantomData;
 use frame_support::{
 	storage::child::{self, ChildInfo},

@@ -102,7 +102,7 @@ impl<T: Config> Key<T> {
 /// Call or instantiate both called into other contracts and pass through errors happening
 /// in those to the caller. This enum is for the caller to distinguish whether the error
 /// happened during the execution of the callee or in the current execution context.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, parity_scale_codec::Decode, parity_scale_codec::Encode)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, codec::Decode, codec::Encode)]
 pub enum ErrorOrigin {
 	/// Caller error origin.
 	///
@@ -114,7 +114,7 @@ pub enum ErrorOrigin {
 }
 
 /// Error returned by contract execution.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, parity_scale_codec::Decode, parity_scale_codec::Encode)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, codec::Decode, codec::Encode)]
 pub struct ExecError {
 	/// The reason why the execution failed.
 	pub error: DispatchError,
@@ -406,9 +406,9 @@ pub trait Ext: sealing::Sealed {
 	PartialEq,
 	Eq,
 	sp_core::RuntimeDebug,
-	parity_scale_codec::Decode,
-	parity_scale_codec::Encode,
-	parity_scale_codec::MaxEncodedLen,
+	codec::Decode,
+	codec::Encode,
+	codec::MaxEncodedLen,
 	scale_info::TypeInfo,
 )]
 pub enum ExportedFunction {
@@ -1719,7 +1719,7 @@ mod tests {
 		Error,
 	};
 	use assert_matches::assert_matches;
-	use parity_scale_codec::{Decode, Encode};
+	use codec::{Decode, Encode};
 	use frame_support::{assert_err, assert_ok, parameter_types};
 	use frame_system::{EventRecord, Phase};
 	use pallet_contracts_uapi::ReturnFlags;

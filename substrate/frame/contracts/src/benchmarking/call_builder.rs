@@ -25,7 +25,7 @@ use crate::{
 	Schedule, TypeInfo, WasmBlob, Weight,
 };
 use alloc::{vec, vec::Vec};
-use parity_scale_codec::{Encode, HasCompact};
+use codec::{Encode, HasCompact};
 use core::fmt::Debug;
 use frame_benchmarking::benchmarking;
 use sp_core::Get;

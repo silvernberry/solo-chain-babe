@@ -54,7 +54,7 @@ use crate::{
 	Perbill, SpanSlash, UnappliedSlash, ValidatorSlashInEra,
 };
 use alloc::vec::Vec;
-use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
+use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
 	ensure,
 	traits::{Defensive, DefensiveSaturating, Imbalance, OnUnbalanced},

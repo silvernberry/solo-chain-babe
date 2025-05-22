@@ -32,7 +32,7 @@ use frame_support::{
 use sp_consensus_babe::{BabeConfiguration, Epoch, Slot, EquivocationProof, AllowedSlots, OpaqueKeyOwnershipProof};
 use crate::genesis_config_presets; 
 use sp_genesis_builder::PresetId;
-use parity_scale_codec::{Encode, Decode};
+use codec::{Encode, Decode};
 use pallet_grandpa::AuthorityId as GrandpaId;
 use sp_api::impl_runtime_apis;
 use sp_consensus_babe::AuthorityId as BabeId;
@@ -154,7 +154,7 @@ impl_runtime_apis! {
 			_slot: sp_consensus_babe::Slot,
 			authority_id: sp_consensus_babe::AuthorityId,
 		) -> Option<sp_consensus_babe::OpaqueKeyOwnershipProof> {
-			use parity_scale_codec::Encode;
+			use codec::Encode;
 
 			Historical::prove((sp_consensus_babe::KEY_TYPE, authority_id))
 				.map(|p| p.encode())

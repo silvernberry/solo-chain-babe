@@ -75,7 +75,7 @@ use crate::{
 	Error,
 };
 use alloc::vec::Vec;
-use parity_scale_codec::{Decode, MaxEncodedLen};
+use codec::{Decode, MaxEncodedLen};
 use core::marker::PhantomData;
 use frame_support::weights::Weight;
 use sp_runtime::DispatchError;

@@ -24,7 +24,7 @@ use crate::{
 	weights::WeightInfo,
 	CodeHash, Config, Pallet, TrieId, Weight, LOG_TARGET,
 };
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use core::{
 	cmp::{max, min},
 	ops::Deref,

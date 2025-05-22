@@ -28,7 +28,7 @@ use crate::{
 };
 #[cfg(feature = "try-runtime")]
 use alloc::collections::btree_map::BTreeMap;
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 #[cfg(feature = "try-runtime")]
 use environmental::Vec;
 #[cfg(feature = "try-runtime")]

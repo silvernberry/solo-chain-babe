@@ -274,7 +274,7 @@ impl<T: Config> StakingLedger<T> {
 #[cfg(test)]
 use {
 	crate::UnlockChunk,
-	parity_scale_codec::{Decode, Encode, MaxEncodedLen},
+	codec::{Decode, Encode, MaxEncodedLen},
 	scale_info::TypeInfo,
 };
 
@@ -304,4 +304,4 @@ impl<T: Config> PartialEq<StakingLedgerInspect<T>> for StakingLedger<T> {
 }
 
 #[cfg(test)]
-impl<T: Config> parity_scale_codec::EncodeLike<StakingLedger<T>> for StakingLedgerInspect<T> {}
+impl<T: Config> codec::EncodeLike<StakingLedger<T>> for StakingLedgerInspect<T> {}

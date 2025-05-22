@@ -24,7 +24,7 @@ use crate::{
 	AccountIdOf, BalanceOf, CodeHash, Config, Determinism, Pallet, Weight, LOG_TARGET,
 };
 use alloc::vec::Vec;
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use frame_support::{
 	pallet_prelude::*, storage_alias, traits::ReservableCurrency, weights::WeightMeter,
 	DefaultNoBound, Identity,

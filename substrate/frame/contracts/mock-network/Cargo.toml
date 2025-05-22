@@ -12,7 +12,7 @@ description = "A mock network for testing pallet-contracts"
 workspace = true
 
 [dependencies]
-parity-scale-codec = { features = ["derive", "max-encoded-len"], workspace = true }
+codec = { features = ["derive", "max-encoded-len"], workspace = true }
 frame-support.workspace = true
 frame-system.workspace = true
 pallet-assets.default-features = true
@@ -55,7 +55,7 @@ pallet-contracts-fixtures = { workspace = true, default-features = false }
 [features]
 default = ["std"]
 std = [
-	"parity-scale-codec/std",
+	"codec/std",
 	"frame-support/std",
 	"frame-system/std",
 	"pallet-balances/std",

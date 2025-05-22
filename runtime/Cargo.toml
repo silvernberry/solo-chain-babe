@@ -13,7 +13,7 @@ publish = false
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-parity-scale-codec = { features = ["derive"], workspace = true }
+codec = { features = ["derive"], workspace = true }
 frame-benchmarking = { optional = true, workspace = true }
 frame-executive.workspace = true
 frame-metadata-hash-extension.workspace = true
@@ -58,6 +58,7 @@ sp-consensus-aura = { features = ["serde"], workspace = true }
 sp-consensus-grandpa = { features = ["serde"], workspace = true }
 sp-core = { features = ["serde"], workspace = true }
 sp-io.workspace = true
+hex-literal.workspace = true
 sp-genesis-builder.workspace = true
 sp-keyring.workspace = true
 sp-staking.workspace = true
@@ -67,6 +68,8 @@ sp-session.workspace = true
 sp-storage.workspace = true
 sp-transaction-pool.workspace = true
 sp-version = { features = ["serde"], workspace = true }
+sp-externalities.workspace = true
+environmental.workspace = true
 zeroize = { version = "1.7.0", default-features = false }
 
 [build-dependencies]
@@ -76,7 +79,7 @@ substrate-wasm-builder = { optional = true, workspace = true, default-features =
 [features]
 default = ["std"]
 std = [
-	"parity-scale-codec/std",
+	"codec/std",
 	"frame-benchmarking?/std",
 	"frame-executive/std",
 	"frame-metadata-hash-extension/std",
@@ -117,6 +120,7 @@ std = [
 	"sp-core/std",
 	"sp-genesis-builder/std",
 	"sp-inherents/std",
+	"sp-externalities/std",
 	"sp-keyring/std",
 	"sp-offchain/std",
 	"sp-runtime/std",

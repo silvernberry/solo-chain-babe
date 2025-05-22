@@ -104,14 +104,14 @@
 //!
 //! ```ignore
 //! [dependencies]
-//! parity_scale_codec = { features = ["max-encoded-len"], workspace = true }
+//! codec = { features = ["max-encoded-len"], workspace = true }
 //! scale-info = { features = ["derive"], workspace = true }
 //! frame = { workspace = true, features = ["runtime"] }
 //!
 //! [features]
 //! default = ["std"]
 //! std = [
-//! 	"parity_scale_codec/std",
+//! 	"codec/std",
 //! 	"scale-info/std",
 //! 	"frame/std",
 //! ]
@@ -566,7 +566,7 @@ pub mod token {
 ///
 /// This is already part of the [`prelude`].
 pub mod derive {
-	pub use parity_scale_codec::{Decode, Encode};
+	pub use codec::{Decode, Encode};
 	pub use core::fmt::Debug;
 	pub use frame_support::{
 		CloneNoBound, DebugNoBound, DefaultNoBound, EqNoBound, OrdNoBound, PartialEqNoBound,
@@ -632,7 +632,7 @@ pub mod deps {
 	pub use sp_io;
 	pub use sp_runtime;
 
-	pub use parity_scale_codec;
+	pub use codec;
 	pub use scale_info;
 
 	#[cfg(feature = "runtime")]

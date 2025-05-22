@@ -171,7 +171,7 @@ where
 	#[cfg(feature = "try-runtime")]
 	fn pre_upgrade() -> Result<Vec<u8>, sp_runtime::TryRuntimeError> {
 		use alloc::collections::btree_set::BTreeSet;
-		use parity_scale_codec::Encode;
+		use codec::Encode;
 
 		// Get staked and deposited balances as reported by this pallet.
 		let (account_deposits, account_locks, _) = Self::get_account_deposits_and_locks();
@@ -258,7 +258,7 @@ where
 	fn post_upgrade(
 		account_reserved_before_bytes: Vec<u8>,
 	) -> Result<(), sp_runtime::TryRuntimeError> {
-		use parity_scale_codec::Decode;
+		use codec::Decode;
 
 		let account_reserved_before =
 			BTreeMap::<T::AccountId, BalanceOf<T>>::decode(&mut &account_reserved_before_bytes[..])

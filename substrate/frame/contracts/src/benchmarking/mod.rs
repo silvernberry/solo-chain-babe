@@ -36,7 +36,7 @@ use crate::{
 	Pallet as Contracts, *,
 };
 use alloc::{vec, vec::Vec};
-use parity_scale_codec::{Encode, MaxEncodedLen};
+use codec::{Encode, MaxEncodedLen};
 use frame_benchmarking::v2::*;
 use frame_support::{
 	self, assert_ok,
@@ -221,7 +221,7 @@ fn caller_funding<T: Config>() -> BalanceOf<T> {
 
 #[benchmarks(
 	where
-		<BalanceOf<T> as parity_scale_codec::HasCompact>::Type: Clone + Eq + PartialEq + core::fmt::Debug + scale_info::TypeInfo + parity_scale_codec::Encode,
+		<BalanceOf<T> as codec::HasCompact>::Type: Clone + Eq + PartialEq + core::fmt::Debug + scale_info::TypeInfo + codec::Encode,
 		T: Config + pallet_balances::Config,
 		BalanceOf<T>: From<<pallet_balances::Pallet<T> as Currency<T::AccountId>>::Balance>,
 		<pallet_balances::Pallet<T> as Currency<T::AccountId>>::Balance: From<BalanceOf<T>>,
@@ -772,7 +772,7 @@ mod benchmarks {
 
 	#[benchmark(pov_mode = Measured)]
 	fn seal_gas_left() {
-		// use correct max_encoded_len when new version of parity-scale-codec is released
+		// use correct max_encoded_len when new version of codec is released
 		let len = 18u32;
 		assert!(<Weight as MaxEncodedLen>::max_encoded_len() as u32 != len);
 		build_runtime!(runtime, memory: [32u32.to_le_bytes(), vec![0u8; len as _], ]);

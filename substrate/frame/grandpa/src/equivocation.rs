@@ -36,7 +36,7 @@
 //! definition.
 
 use alloc::{boxed::Box, vec, vec::Vec};
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use frame_support::traits::{Get, KeyOwnerProofSystem};
 use frame_system::pallet_prelude::BlockNumberFor;
 use log::{error, info};

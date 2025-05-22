@@ -23,7 +23,7 @@ use crate::{
 	weights::WeightInfo,
 	AccountIdOf, BalanceOf, CodeHash, Config, Pallet, TrieId, Weight, LOG_TARGET,
 };
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use frame_support::{pallet_prelude::*, storage_alias, weights::WeightMeter, DefaultNoBound};
 use sp_runtime::BoundedBTreeMap;
 

@@ -18,7 +18,7 @@
 //! Functions that deal with address derivation.
 
 use crate::{CodeHash, Config};
-use parity_scale_codec::{Decode, Encode};
+use codec::{Decode, Encode};
 use sp_runtime::traits::{Hash, TrailingZeroInput};
 
 /// Provides the contract address generation method.

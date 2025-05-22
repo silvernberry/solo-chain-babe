@@ -49,7 +49,7 @@ use crate::{
 	HoldReason, Pallet, PristineCode, Schedule, Weight, LOG_TARGET,
 };
 use alloc::vec::Vec;
-use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use frame_support::{
 	dispatch::DispatchResult,
 	ensure,

@@ -68,7 +68,7 @@ pub mod v16;
 include!(concat!(env!("OUT_DIR"), "/migration_codegen.rs"));
 
 use crate::{weights::WeightInfo, Config, Error, MigrationInProgress, Pallet, Weight, LOG_TARGET};
-use parity_scale_codec::{Codec, Decode};
+use codec::{Codec, Decode};
 use core::marker::PhantomData;
 use frame_support::{
 	pallet_prelude::*,

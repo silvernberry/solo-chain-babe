@@ -16,7 +16,7 @@ workspace = true
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-parity-scale-codec = { features = ["derive"], workspace = true }
+codec = { features = ["derive"], workspace = true }
 frame-benchmarking = { optional = true, workspace = true }
 frame-election-provider-support.workspace = true
 frame-support.workspace = true
@@ -49,7 +49,7 @@ substrate-test-utils = { workspace = true }
 [features]
 default = ["std"]
 std = [
-	"parity-scale-codec/std",
+	"codec/std",
 	"frame-benchmarking?/std",
 	"frame-election-provider-support/std",
 	"frame-support/std",

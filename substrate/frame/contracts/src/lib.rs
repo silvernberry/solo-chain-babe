@@ -116,7 +116,7 @@ use crate::{
 	storage::{meter::Meter as StorageMeter, ContractInfo, DeletionQueueManager},
 	wasm::{CodeInfo, RuntimeCosts, WasmBlob},
 };
-use parity_scale_codec::{Codec, Decode, DecodeWithMemTracking, Encode, HasCompact, MaxEncodedLen};
+use codec::{Codec, Decode, DecodeWithMemTracking, Encode, HasCompact, MaxEncodedLen};
 use core::fmt::Debug;
 use environmental::*;
 use frame_support::{
@@ -282,7 +282,7 @@ pub mod pallet {
 		#[pallet::no_default_bounds]
 		type RuntimeCall: Dispatchable<RuntimeOrigin = Self::RuntimeOrigin, PostInfo = PostDispatchInfo>
 			+ GetDispatchInfo
-			+ parity_scale_codec::Decode
+			+ codec::Decode
 			+ IsType<<Self as frame_system::Config>::RuntimeCall>;
 
 		/// Overarching hold reason.
@@ -748,7 +748,7 @@ pub mod pallet {
 			dest: AccountIdLookupOf<T>,
 			#[pallet::compact] value: BalanceOf<T>,
 			#[pallet::compact] gas_limit: OldWeight,
-			storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+			storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 			data: Vec<u8>,
 		) -> DispatchResultWithPostInfo {
 			Self::call(
@@ -775,7 +775,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			#[pallet::compact] value: BalanceOf<T>,
 			#[pallet::compact] gas_limit: OldWeight,
-			storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+			storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 			code: Vec<u8>,
 			data: Vec<u8>,
 			salt: Vec<u8>,
@@ -802,7 +802,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			#[pallet::compact] value: BalanceOf<T>,
 			#[pallet::compact] gas_limit: OldWeight,
-			storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+			storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 			code_hash: CodeHash<T>,
 			data: Vec<u8>,
 			salt: Vec<u8>,
@@ -852,7 +852,7 @@ pub mod pallet {
 		pub fn upload_code(
 			origin: OriginFor<T>,
 			code: Vec<u8>,
-			storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+			storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 			determinism: Determinism,
 		) -> DispatchResult {
 			Migration::<T>::ensure_migrated()?;
@@ -939,7 +939,7 @@ pub mod pallet {
 			dest: AccountIdLookupOf<T>,
 			#[pallet::compact] value: BalanceOf<T>,
 			gas_limit: Weight,
-			storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+			storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 			data: Vec<u8>,
 		) -> DispatchResultWithPostInfo {
 			Migration::<T>::ensure_migrated()?;
@@ -996,7 +996,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			#[pallet::compact] value: BalanceOf<T>,
 			gas_limit: Weight,
-			storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+			storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 			code: Vec<u8>,
 			data: Vec<u8>,
 			salt: Vec<u8>,
@@ -1061,7 +1061,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			#[pallet::compact] value: BalanceOf<T>,
 			gas_limit: Weight,
-			storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+			storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 			code_hash: CodeHash<T>,
 			data: Vec<u8>,
 			salt: Vec<u8>,

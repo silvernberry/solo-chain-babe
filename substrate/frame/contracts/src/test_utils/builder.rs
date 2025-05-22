@@ -21,7 +21,7 @@ use crate::{
 	ContractExecResult, ContractInstantiateResult, DebugInfo, Determinism, EventRecordOf,
 	ExecReturnValue, InstantiateReturnValue, OriginFor, Pallet, Weight,
 };
-use parity_scale_codec::{Encode, HasCompact};
+use codec::{Encode, HasCompact};
 use core::fmt::Debug;
 use frame_support::pallet_prelude::DispatchResultWithPostInfo;
 use paste::paste;
@@ -79,7 +79,7 @@ builder!(
 		origin: OriginFor<T>,
 		value: BalanceOf<T>,
 		gas_limit: Weight,
-		storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+		storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 		code: Vec<u8>,
 		data: Vec<u8>,
 		salt: Vec<u8>,
@@ -104,7 +104,7 @@ builder!(
 		origin: OriginFor<T>,
 		value: BalanceOf<T>,
 		gas_limit: Weight,
-		storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+		storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 		code_hash: CodeHash<T>,
 		data: Vec<u8>,
 		salt: Vec<u8>,
@@ -168,7 +168,7 @@ builder!(
 		dest: AccountIdLookupOf<T>,
 		value: BalanceOf<T>,
 		gas_limit: Weight,
-		storage_deposit_limit: Option<<BalanceOf<T> as parity_scale_codec::HasCompact>::Type>,
+		storage_deposit_limit: Option<<BalanceOf<T> as codec::HasCompact>::Type>,
 		data: Vec<u8>,
 	) -> DispatchResultWithPostInfo;
 
